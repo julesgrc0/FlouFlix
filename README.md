@@ -23,36 +23,3 @@ movie name:https://mymovie/video.html
 name:link
 ...
 ```
-
-> TODO
-
-I didn't want to create a new capacitor plugin, so I temporarily modified the AppPlugin.java file which belongs to @capacitor/app.
-So my plugin will have to be created in the future to add these few lines:
-
-```java
-/**
-* Handle ACTION_VIEW intents to store a URL that was used to open the app
-* @param intent
-*/
-@Override
-protected void handleOnNewIntent(Intent intent) {
-    super.handleOnNewIntent(intent);
-
-    if(intent == null)
-    {
-        return;
-    }
-
-    String text = intent.getStringExtra("text");
-    String file = intent.getStringExtra("file");
-    if(text == null && file == null)
-    {
-        return;
-    }
-
-    JSObject ret = new JSObject();
-    ret.put("text", text);
-    ret.put("file", file);
-    this.notifyListeners(EVENT_URL_OPEN, ret, true);
-}
-```

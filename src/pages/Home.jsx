@@ -1,16 +1,15 @@
 import React from "react";
-import { Avatar, Box, Flex, Heading, Center } from "@chakra-ui/react";
+import { Avatar, Box, Flex, Heading } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
 import { StatusBar } from "@capacitor/status-bar";
 import { NavigationBar } from "@hugotomazi/capacitor-navigation-bar";
 import { Capacitor } from "@capacitor/core";
-import { App } from "@capacitor/app";
 import { Toast } from "@capacitor/toast";
 import { Network } from '@capacitor/network';
-
+import { FlouFlix } from '../plugin/index';
 import { storage } from "../storage";
-import { isUrlValid, searchApiMovies, grabbeVideoFromUrl, parseFile } from "../utility";
+import { isUrlValid, parseFile } from "../utility";
 
 import { ContentCards } from './components/ContentCards';
 import { DrawerAddCard } from "./components/DrawerAddCard";
@@ -68,8 +67,8 @@ export default function Home() {
             NavigationBar.show();
         }
 
-        App.addListener("appUrlOpen", (evt) => {
-            if (evt.text) {
+        FlouFlix.addListener("add", (evt) => {
+            if (evt.text != null) {
                 if (isUrlValid(evt.text)) {
                     onCreateNewCard(evt.text, "movie", evt.text);
                 } else {
@@ -77,7 +76,7 @@ export default function Home() {
                         text: "URL non valide !",
                     });
                 }
-            } else if (evt.file) {
+            } else if (evt.file != null) {
                 Toast.show({
                     text: "Chargement du fichier...",
                 });
@@ -117,7 +116,7 @@ export default function Home() {
             }
         })
         return () => {
-            App.removeAllListeners();
+            FlouFlix.removeAllListeners();
             Network.removeAllListeners();
         };
     }, []);
