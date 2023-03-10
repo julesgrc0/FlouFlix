@@ -1,6 +1,5 @@
 import React from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { Box, Text, Icon } from "@chakra-ui/react";
 import { storage } from "../storage";
 
 import { App } from "@capacitor/app";
@@ -9,6 +8,7 @@ import { Toast } from "@capacitor/toast";
 import { StatusBar } from "@capacitor/status-bar";
 import { NavigationBar } from "@hugotomazi/capacitor-navigation-bar";
 import { ScreenOrientation, OrientationType } from '@capawesome/capacitor-screen-orientation';
+import { FlouFlix } from "../plugin";
 
 function InitPlayer(id, title, video, callback, smtitle = undefined) {
     CapacitorVideoPlayer.initPlayer({
@@ -50,11 +50,14 @@ export default function Video() {
                 if (state === false) {
                     exit("Nous n'avons pas réussi à lire la vidéo...");
                 } else {
+
                     (async ()=>{
                         try {
-                        await StatusBar.hide();
-                        await NavigationBar.hide();
-                        await ScreenOrientation.lock({ type: OrientationType.LANDSCAPE });
+                            await StatusBar.hide();
+                            await NavigationBar.hide();
+                            await ScreenOrientation.lock({ type: OrientationType.LANDSCAPE });
+
+                            
                         }catch {
                             exit("Nous n'avons pas réussi à lire la vidéo...");
                         }
@@ -91,6 +94,13 @@ export default function Video() {
                         
                         exit("Il semble que cette video n'existe pas...");
                     } else {
+                        FlouFlix.setData({
+                            value: JSON.stringify({
+                                last_id: value.id,
+                                last_title: value.list[index].title + " - " + value.data.title,
+                                last_index: index
+                            })
+                        })
                         init(value.id, value.data.title, video, value.list[index].title);
                     }
                 } catch {
@@ -102,6 +112,13 @@ export default function Video() {
                 if (video.url.length == 0) {
                     exit("Il semble que cette video n'existe pas...");
                 } else {
+                    FlouFlix.setData({
+                        value: JSON.stringify({
+                            last_id: value.id,
+                            last_title: value.data.title,
+                            last_index: -1
+                        })
+                    })
                     init(value.id, value.data.title, video);
                 }
             }
@@ -110,6 +127,18 @@ export default function Video() {
         App.addListener("backButton", (event) => {
             exit();
         });
+        
+        App.addListener("pause", ()=>{
+            CapacitorVideoPlayer.pause({
+                playerId:id
+            })
+        })
+        App.addListener("resume", () => {
+            CapacitorVideoPlayer.play({
+                playerId: id
+            })
+        })
+
         CapacitorVideoPlayer.addListener("jeepCapVideoPlayerExit", (evt) => {
             exit();
         });

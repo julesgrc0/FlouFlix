@@ -14,25 +14,8 @@ import { isUrlValid, parseFile } from "../utility";
 import { ContentCards } from './components/ContentCards';
 import { DrawerAddCard } from "./components/DrawerAddCard";
 import { DrawerAddSerieItem } from "./components/DrawerAddSerieItem";
-
-function TopBar({ setDrawerOpen, drawerOpen }) {
-    return (
-        <Flex padding={5} borderBottom={"3px solid"} color={"white"} columnGap={5}>
-            <Heading lineHeight={"base"}>FlouFlix</Heading>
-            <Avatar
-                icon={<AddIcon />}
-                borderRadius={"6px"}
-                ml="auto"
-                bg={"white"}
-                color={"black"}
-                onClick={() => {
-                    setDrawerOpen(!drawerOpen);
-                }}
-            />
-        </Flex>
-    );
-}
-
+import { TopBar } from './components/TopBar';
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -44,6 +27,8 @@ export default function Home() {
     const [drawerNewCard, setDrawerNewCardOpen] = React.useState(false);
     const [drawerSerieAdd, setDrawerSerieAddOpen] = React.useState(false);
     const [selectedSerie, setSelectedSerie] = React.useState(null);
+    const navigate = useNavigate();
+
 
     React.useEffect(() => {
         storage.getAll().then((values) => {
@@ -57,7 +42,6 @@ export default function Home() {
             });
             StatusBar.show();
         }
-
         if (Capacitor.isPluginAvailable("NavigationBar")) {
             NavigationBar.setColor({
                 color: "#161616",
@@ -67,7 +51,7 @@ export default function Home() {
             NavigationBar.show();
         }
 
-        FlouFlix.addListener("add", (evt) => {
+        FlouFlix.addListener("onTextDataShared", (evt) => {
             if (evt.text != null) {
                 if (isUrlValid(evt.text)) {
                     onCreateNewCard(evt.text, "movie", evt.text);
@@ -104,6 +88,26 @@ export default function Home() {
             }
         });
 
+        FlouFlix.addListener("onReadyCreate", (evt) => {
+            setDrawerNewCardOpen(true);
+        })
+
+        FlouFlix.addListener("onPlayLast", (evt) => {
+            (async () => {
+                const obj = await FlouFlix.getData();
+                if (obj.value == null) {
+                    return;
+                }
+                const data = JSON.parse(obj.value);
+                if (data.last_index < 0) {
+                    navigate("/video/" + data.last_id);
+                } else {
+                    navigate("/video/" + data.last_id + "?index=" + data.last_index);
+                }
+
+            })()
+        })
+
         Network.addListener('networkStatusChange', (status) => {
             if (status.connected) {
                 storage.getAll().then((values) => {
@@ -114,7 +118,8 @@ export default function Home() {
                 setItems([]);
                 setConnected(false);
             }
-        })
+        });
+
         return () => {
             FlouFlix.removeAllListeners();
             Network.removeAllListeners();

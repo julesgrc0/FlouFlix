@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import {
     Box,
     Heading,
@@ -11,9 +10,10 @@ import { WarningTwoIcon } from "@chakra-ui/icons";
 import { ConfirmModal } from './ConfirmModal';
 import { storage } from '../../storage';
 import { useVideoUpdate } from "./useVideoUpdate";
+import { useNavigate } from "react-router-dom";
 
  function _CardSerieItem({ item, index, id, setItems }) {
-    const navigate = useNavigate();
+     const navigate = useNavigate()
     const [open, setOpen] = React.useState(false);
     const { update, error, loading } = useVideoUpdate(item, async (newItem)=>{
         await storage.editSerieItem(id, index, newItem)
@@ -28,7 +28,7 @@ import { useVideoUpdate } from "./useVideoUpdate";
             color={error ? 'blackAlpha.600' : 'blackAlpha.800'}
             onClick={() => {
                 if (!error) {
-                    navigate("/video/" + id + "?index=" + index);
+                    navigate("/video/"+id+"?index="+ index);
                 }
             }}
 

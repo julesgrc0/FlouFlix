@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import {
     Box,
     Heading,
@@ -16,9 +15,10 @@ import { motion } from "framer-motion";
 import { CardEditButton } from './CardEditButton';
 import { useVideoUpdate } from "./useVideoUpdate";
 import { storage } from '../../storage'
+import { useNavigate } from "react-router-dom";
 
 function _CardMovie({ item, setItems })  {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
     const { title, date } = item.data;
     const { update, error, loading } = useVideoUpdate(item.data, async (newItem) => {
         await storage.set(item.id, newItem)
@@ -26,7 +26,6 @@ function _CardMovie({ item, setItems })  {
         setItems(items);
     });
 
-    const ref = React.useRef(null);
     return (
         <motion.div
             initial={{
