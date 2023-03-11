@@ -2,8 +2,13 @@ package com.fouflix.julesg10;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.webkit.CookieManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
@@ -14,8 +19,11 @@ import com.google.android.gms.cast.framework.CastContext;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
+
 public class MainActivity extends BridgeActivity {
 
+    private ArrayList<ShortcutInfoCompat> shortcuts = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +32,30 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
         CastContext.getSharedInstance(this);
 
-        ShortcutManagerCompat.removeAllDynamicShortcuts(this.getApplicationContext());
-        this.createShortcutWatch("id1");
-        this.createShortcutAdd("id2");
+        if(getIntent().getAction().equals(Intent.ACTION_MAIN))
+        {
+            this.updateShortcuts();
+        }
+    }
+
+    private void updateShortcuts()
+    {
+        this.shortcuts.clear();
+        this.createShortcutWatch("id1", "id2");
+        this.createShortcutAdd("id3");
+        ShortcutManagerCompat.setDynamicShortcuts(this.getApplicationContext(), this.shortcuts);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.updateShortcuts();
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        getBridge().getWebView().setBackgroundColor(Color.parseColor("#161616"));
     }
 
     private Intent createIntent()
@@ -37,7 +66,7 @@ public class MainActivity extends BridgeActivity {
         return intent;
     }
 
-    private void createShortcutWatch(String id)
+    private void createShortcutWatch(String id, String id2)
     {
         FlouFlixData data = new FlouFlixData(this.getApplicationContext());
         try{
@@ -51,6 +80,15 @@ public class MainActivity extends BridgeActivity {
                 lasti.putExtra("last", true);
 
                 this.shortcutCreate(lasti,"Regarder "+lastTitle, lastTitle, R.drawable.play_icon, id);
+            }
+
+            String nextTitle = obj.getString("next_title", "");
+            if(nextTitle.length() != 0)
+            {
+                Intent nexti = this.createIntent();
+                nexti.putExtra("next", true);
+
+                this.shortcutCreate(nexti,"Regarder "+nextTitle, nextTitle, R.drawable.play_icon, id2);
             }
         } catch (JSONException e) {}
 
@@ -73,6 +111,6 @@ public class MainActivity extends BridgeActivity {
                 .setIntent(intent)
                 .build();
 
-        ShortcutManagerCompat.pushDynamicShortcut(this.getApplicationContext(), shortcut);
+        this.shortcuts.add(shortcut);
     }
 }

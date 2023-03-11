@@ -12,7 +12,7 @@ import {
 import {
     ArrowForwardIcon,
 } from "@chakra-ui/icons";
-import {storage} from '../../storage';
+import { storage } from '../api/storage';
 
 export function DrawerAddSerieItem({ isOpen, setOpen, selected, setItems }) {
     const [url, setUrl] = React.useState("");
@@ -62,13 +62,13 @@ export function DrawerAddSerieItem({ isOpen, setOpen, selected, setItems }) {
                             variant="outline"
                             w={"100%"}
                             onClick={() => {
-                                (async ()=>{
+                                (async () => {
                                     let serieItem = await storage.createItem(title, url);
                                     await storage.addSerieItem(selected.id, serieItem)
-                
+
                                     const items = await storage.getAll();
                                     setItems(items);
-                                
+
 
                                     setUrl("");
                                     setTitle("");

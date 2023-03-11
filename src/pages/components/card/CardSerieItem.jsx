@@ -1,4 +1,6 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
     Box,
     Heading,
@@ -7,10 +9,11 @@ import {
 } from "@chakra-ui/react";
 
 import { WarningTwoIcon } from "@chakra-ui/icons";
-import { ConfirmModal } from './ConfirmModal';
-import { storage } from '../../storage';
-import { useVideoUpdate } from "./useVideoUpdate";
-import { useNavigate } from "react-router-dom";
+import { ConfirmModal } from '../ConfirmModal';
+
+import { useVideoUpdate } from "../hooks/useVideoUpdate";
+import { runAsync } from "../api/utility";
+import { storage } from '../api/storage';
 
  function _CardSerieItem({ item, index, id, setItems }) {
      const navigate = useNavigate()
@@ -19,6 +22,8 @@ import { useNavigate } from "react-router-dom";
         await storage.editSerieItem(id, index, newItem)
         const items = await storage.getAll();
         setItems(items);
+
+        return false;
     });
 
     return <Box key={index} padding={2} pos="relative">
@@ -34,8 +39,8 @@ import { useNavigate } from "react-router-dom";
 
             w="80%"
         >
-            {error && !loading && <WarningTwoIcon onClick={update} fontSize='sm' mr='3' />}
-            {error && loading && <Spinner size='xs' mr='3' />}
+            {error && !loading && <WarningTwoIcon fontSize='sm' mr='3' onClick={update} />}
+            {loading && <Spinner size='xs' mr='3' />}
             {item.title} &bull; {item.date}
         </Heading>
         <CloseButton
@@ -48,12 +53,12 @@ import { useNavigate } from "react-router-dom";
             }}
         />
         <ConfirmModal title={"Confirmer la suppression de la vidéo"} isOpen={open} onCancel={() => setOpen(false)} onConfirm={() => {
-            (async ()=>{
+            runAsync(async ()=>{
                 await storage.removeSerieItem(id, index);
                 const items = await storage.getAll();
                 setItems(items);
                 setOpen(false);
-            })()
+            })
         }} />
     </Box>
 }

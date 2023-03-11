@@ -1,4 +1,7 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+
 import {
     Box,
     Heading,
@@ -10,12 +13,10 @@ import {
     Spinner
 } from "@chakra-ui/react";
 import { WarningTwoIcon } from "@chakra-ui/icons";
-import { motion } from "framer-motion";
 
 import { CardEditButton } from './CardEditButton';
-import { useVideoUpdate } from "./useVideoUpdate";
-import { storage } from '../../storage'
-import { useNavigate } from "react-router-dom";
+import { useVideoUpdate } from "../hooks/useVideoUpdate";
+import { storage } from '../api/storage'
 
 function _CardMovie({ item, setItems })  {
     const navigate = useNavigate()
@@ -24,6 +25,7 @@ function _CardMovie({ item, setItems })  {
         await storage.set(item.id, newItem)
         const items = await storage.getAll();
         setItems(items);
+        return false;
     });
 
     return (
@@ -55,7 +57,7 @@ function _CardMovie({ item, setItems })  {
                         color={error ? 'blackAlpha.600' : 'blackAlpha.800'}
                     >
                         {error && !loading && <WarningTwoIcon fontSize='sm' mr='3' onClick={update} />}
-                        {error && loading && <Spinner size='xs' mr='3' />}
+                        {loading && <Spinner size='xs' mr='3' />}
                         {title}
                     </Heading>
                     <Box

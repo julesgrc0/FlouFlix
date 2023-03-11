@@ -17,6 +17,7 @@ public class FlouFlixPlugin  extends Plugin {
     private String EVENT_SHARE_TEXT_DATA = "onTextDataShared";
     private String EVENT_READY_CREATE = "onReadyCreate";
     private String EVENT_PLAY_LAST = "onPlayLast";
+    private String EVENT_PLAY_NEXT = "onPlayNext";
 
     private FlouFlixData data;
 
@@ -47,6 +48,10 @@ public class FlouFlixPlugin  extends Plugin {
         super.handleOnNewIntent(intent);
 
         if(intent == null)
+        {
+            return;
+        }
+        if(this.checkIntentAction(intent,"next", EVENT_PLAY_NEXT))
         {
             return;
         }

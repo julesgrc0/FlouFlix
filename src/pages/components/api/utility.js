@@ -3,13 +3,8 @@ import { Toast } from '@capacitor/toast';
 
 const API_KEY = "675eba7a24c6d06fa76bf002db96f803";
 
-export function calculateDaysBetweenDates(date1, date2) {
-    var oneDay = 24 * 60 * 60 * 1000;
-    var date1InMillis = date1.getTime();
-    var date2InMillis = date2.getTime();
-    var days = Math.round(Math.abs(date2InMillis - date1InMillis) / oneDay);
-    console.log(days);
-    return days;
+export function getTimeDiff(d1, d2, div = 24 * 60 * 60 * 1000) {
+    return Math.round(Math.abs(d2.getTime() - d1.getTime()) / div);
 }
 
 export function searchApiMovies(name, type) {
@@ -165,4 +160,21 @@ export function isUrlValid(str) {
         '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
         '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
     return !!pattern.test(str);
+}
+
+export async function runAsync(func, noError = false)
+{
+    return new Promise(async (res, rej)=>{
+        try{
+            const data = await func();
+            res(data);
+        }catch(e){
+            if (noError)
+            {
+                res(e)
+            }else{
+                rej(e)
+            }
+        }
+    });
 }

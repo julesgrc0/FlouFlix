@@ -1,21 +1,24 @@
 import React from "react";
-import { Avatar, Box, Flex, Heading } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom";
+
+import { Box } from "@chakra-ui/react";
 
 import { StatusBar } from "@capacitor/status-bar";
 import { NavigationBar } from "@hugotomazi/capacitor-navigation-bar";
 import { Capacitor } from "@capacitor/core";
 import { Toast } from "@capacitor/toast";
 import { Network } from '@capacitor/network';
-import { FlouFlix } from '../plugin/index';
-import { storage } from "../storage";
-import { isUrlValid, parseFile } from "../utility";
 
-import { ContentCards } from './components/ContentCards';
-import { DrawerAddCard } from "./components/DrawerAddCard";
-import { DrawerAddSerieItem } from "./components/DrawerAddSerieItem";
+import { FlouFlix } from '../plugin/index';
+
+import { isUrlResponding, isUrlValid, parseFile, runAsync } from "./components/api/utility";
+import { storage } from "./components/api/storage";
+
 import { TopBar } from './components/TopBar';
-import { useNavigate } from "react-router-dom";
+import { DrawerAddCard } from "./components/drawer/DrawerAddCard";
+import { DrawerAddSerieItem } from './components/drawer/DrawerAddSerieItem';
+import { ContentCards } from './components/card/ContentCards';
+
 
 
 
@@ -92,20 +95,55 @@ export default function Home() {
             setDrawerNewCardOpen(true);
         })
 
-        FlouFlix.addListener("onPlayLast", (evt) => {
-            (async () => {
+        const playVideo = (selid, selindex) =>{
+            runAsync(async () => {
                 const obj = await FlouFlix.getData();
                 if (obj.value == null) {
                     return;
                 }
+                
                 const data = JSON.parse(obj.value);
-                if (data.last_index < 0) {
-                    navigate("/video/" + data.last_id);
-                } else {
-                    navigate("/video/" + data.last_id + "?index=" + data.last_index);
+                if (data[selid] === undefined)
+                {
+                    return;
                 }
 
-            })()
+                const item = await storage.get(data[selid]);
+                if(item == null)
+                {
+                    return;
+                }
+
+                if (item.is_movie) {
+                    const state = await isUrlResponding(item.data.video.url, item.data.video.referer)
+                    if (state) {
+                        navigate("/video/" + data[selid]);
+                    } else {
+                        Toast.show({
+                            text: "Il semble que cette video n'existe pas..."
+                        })
+                    }
+                } else if (data[selindex] < item.list.length) {
+                    const state = await isUrlResponding(item.list[data[selindex]].video.url, item.list[data[selindex]].video.referer)
+                    if (state) {
+                        navigate("/video/" + data[selid] + "?index=" + data[selindex]);
+                    } else {
+                        Toast.show({
+                            text: "Il semble que cette video n'existe pas..."
+                        })
+                    }
+                }
+
+            }) 
+        }
+
+
+        FlouFlix.addListener("onPlayNext", (evt) => {
+            playVideo('next_id', 'next_index')
+        })
+
+        FlouFlix.addListener("onPlayLast", (evt) => {
+            playVideo('last_id','last_index')
         })
 
         Network.addListener('networkStatusChange', (status) => {
@@ -128,7 +166,7 @@ export default function Home() {
 
     const onCreateNewCard = React.useCallback(
         (title, type, url = "", list = []) => {
-            (async () => {
+            runAsync(async () => {
                 if (type == "movie") {
                     const item = await storage.createMovieItem(title, url)
                     await storage.set(item.id, item);
@@ -139,7 +177,7 @@ export default function Home() {
                 }
                 const values = await storage.getAll();
                 setItems(values);
-            })();
+            });
         }, [setItems]);
 
     const setSerieDrawerOpen = React.useCallback(

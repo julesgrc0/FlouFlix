@@ -14,8 +14,10 @@ import {
     EditIcon,
     DeleteIcon,
 } from "@chakra-ui/icons";
-import { ConfirmModal } from './ConfirmModal';
-import { storage } from '../../storage';
+
+import { ConfirmModal } from '../ConfirmModal';
+import { storage } from '../api/storage';
+import { runAsync } from "../api/utility";
 
 export function CardEditButton({ item, setItems }) {
     const [isOpen, setOpen] = React.useState(false);
@@ -36,19 +38,19 @@ export function CardEditButton({ item, setItems }) {
     }, [item]);
 
     const editItem = React.useCallback((newit)=>{
-        (async ()=>{
+        runAsync(async ()=>{
             await storage.set(item.id, newit);
             const items = await storage.getAll();
             setItems(items);
-        })()
+        })
     }, [item, setItems])
 
     const deleteItem = React.useCallback(()=>{
-        (async () => {
+        runAsync(async () => {
             await storage.remove(item.id);
             const items = await storage.getAll();
             setItems(items);
-        })()
+        })
     }, [item, setItems])
 
     return (
