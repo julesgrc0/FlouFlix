@@ -47,6 +47,11 @@ public class FlouFlixActivity extends AppCompatActivity {
 
     private String extractFile(Intent intent) {
         Uri file = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        if(file == null)
+        {
+            file = intent.getData();
+        }
+
         if (file == null) return null;
 
         StringBuilder fileContent = new StringBuilder();
