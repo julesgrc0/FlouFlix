@@ -28,8 +28,9 @@ public class MainActivity extends BridgeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.registerPlugin(FlouFlixPlugin.class);
-
         super.onCreate(savedInstanceState);
+
+
         CastContext.getSharedInstance(this);
 
         if(getIntent().getAction().equals(Intent.ACTION_MAIN))
@@ -49,6 +50,12 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onPause() {
         super.onPause();
+        this.updateShortcuts();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         this.updateShortcuts();
     }
 

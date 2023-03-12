@@ -30,7 +30,8 @@
         <activity
             android:name="com.fouflix.julesg10.FlouFlixActivity"
             android:exported="true"
-            android:label="Ajouter dans FlouFlix">
+            android:label="Ajouter dans FlouFlix"
+            android:icon="@drawable/flouflix_icon">
             <intent-filter>
                 <action android:name="android.intent.action.PROCESS_TEXT" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -49,6 +50,19 @@
             </intent-filter>
         </activity>
 
+
+       <!-- <service
+            android:name="com.fouflix.julesg10.FlouFlixTileService"
+            android:label="FlouFlix Scan"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true"
+            android:icon="@drawable/flouflix_icon">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service> -->
+
+
         <provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.fileprovider"
             android:exported="false" android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
@@ -60,8 +74,7 @@
     </application>
 
     <!-- Permissions -->
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
+    <uses-permission android:name="android.permission.READ_HISTORY_BOOKMARKS" />
 </manifest>
