@@ -25,6 +25,11 @@ export default function App() {
                         errorElement={<Loading />}
                     />
                     <Route
+                        path='/:id'
+                        element={<Home />}
+                        errorElement={<Loading />}
+                    />
+                    <Route
                         path='*'
                         element={<Home />}
                         errorElement={<Loading />}

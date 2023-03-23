@@ -157,6 +157,7 @@ export default function CardDrawer({
                     {!item.is_movie && item.videos.map((vid, index) =>
                         <Flex key={index} borderBottom={index + 1 == item.videos.length ? "none" : "1px solid"} p={2} color="white" justifyContent={"space-between"} alignItems="center">
                             <Text bg='transparent' p={2} textTransform="uppercase" w={"60%"}>{item.is_movie ? item.title : vid.title}</Text>
+                            <Text>{Math.round(vid.video.progress)}%</Text>
                             {!item.is_movie && <Button bg='transparent' border='1px solid' borderColor={"gray.600"}
                                 onClick={() => {
                                     play(item.id, index)

@@ -58,9 +58,7 @@ export default function Video() {
             await ScreenOrientation.lock({ type: OrientationType.PORTRAIT });
             await CapacitorVideoPlayer.stopAllPlayers();
         })().then(() => {
-            navigate("/");
-
-            
+            navigate("/"+id);
         })
     }, [navigate]);
 

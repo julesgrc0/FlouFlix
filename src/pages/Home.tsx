@@ -11,13 +11,32 @@ import Topbar from '../components/Topbar';
 import ScrollCards from '../components/ScrollCards'
 import CardDrawer from '../components/CardDrawer'
 import CreateDrawer from '../components/CreateDrawer'
+import { useNavigate, useParams } from "react-router-dom";
+import { storage } from "../api/storage";
 
 export default function Home() {
+    const { id } = useParams();
+    const navigate = useNavigate()
+
+    
     const [showBorder, setShowBorder] = React.useState<boolean>(false);
     const [isCardOpen, setCardOpen] = React.useState<boolean>(false);
     const [isCreateOpen, setCreateOpen] = React.useState<boolean>(false);
-    const [selectedCard, setSelectedCard] = React.useState(undefined);
+    const [selectedCard, setSelectedCard] = React.useState<any>(undefined);
     
+    React.useEffect(()=>{
+        if(id != undefined)
+        {
+            storage.get(id).then((item)=>{
+                if(item !=  null)
+                {
+                    setSelectedCard(item)
+                    setCardOpen(true);
+                }
+            }).catch(()=>{})
+            
+        }
+    }, [id])
 
     return (
         <Box>
@@ -45,7 +64,14 @@ export default function Home() {
                     setCreateOpen={setCreateOpen}
                 />
 
-                <CardDrawer isCardOpen={isCardOpen} setCreateOpen={setCreateOpen} setCardOpen={setCardOpen} setSelectedCard={setSelectedCard} selectedCard={selectedCard} />
+                <CardDrawer isCardOpen={isCardOpen} setCreateOpen={setCreateOpen} setCardOpen={(value)=>{
+                    if(!value && id != undefined)
+                    {   
+                        navigate("/")
+                    }
+                    setCardOpen(value)
+                    }} 
+                    setSelectedCard={setSelectedCard} selectedCard={selectedCard} />
                 <CreateDrawer isCreateOpen={isCreateOpen} setCreateOpen={setCreateOpen} setSelectedCard={setSelectedCard} selectedCard={selectedCard} />
             </React.Suspense>
         </Box>
