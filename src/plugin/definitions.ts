@@ -6,13 +6,8 @@ export interface FFTextDataSharedEvent {
 }
 
 export interface FFState {
-  state: boolean
-}
-
-export interface FFData {
-  last_id: string;
-  last_title: string;
-  last_index: number;
+  state: boolean,
+  url: string | null
 }
 
 export interface FlouFlixPlugin {
@@ -22,13 +17,24 @@ export interface FlouFlixPlugin {
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
 
   addListener(
-    evt: "onReadyCreate" | "onPlayNext" | "onPlayLast",
+    evt: "onReadyCreate" | "onPlay",
     func: (event: FFState) => void
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
 
-  getData(): Promise<string>;
-
-  setData(value: string): Promise<void>;
+  /**
+   @function setData
+   @param data
+   @description 
+   
+   JSON -> string
+   {
+     next: "video url/...id/...index"
+     last: ...
+     nextTitle: "",
+     lastTitle: ""
+   }
+   */
+  setData(data: object): Promise<void>;
 
   removeAllListeners(): Promise<void>;
 }

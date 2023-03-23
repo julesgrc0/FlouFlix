@@ -62,7 +62,8 @@ public class MainActivity extends BridgeActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        getBridge().getWebView().setBackgroundColor(Color.parseColor("#161616"));
+        getBridge().getWebView().setBackgroundColor(Color.parseColor("#141414"));
+
     }
 
     private Intent createIntent()
@@ -80,22 +81,26 @@ public class MainActivity extends BridgeActivity {
             String value = data.get();
             JSObject obj = new JSObject(value == null ? "": value);
 
-            String lastTitle = obj.getString("last_title", "");
-            if(lastTitle.length() != 0)
+            String lastUrl = obj.getString("last", "");
+            String lastT = obj.getString("lastTitle", "");
+            lastT =( lastT.length() == 0 ?  "Dernier épisode" : lastT);
+            if(lastUrl.length() != 0)
             {
                 Intent lasti = this.createIntent();
-                lasti.putExtra("last", true);
+                lasti.putExtra("play", lastUrl);
 
-                this.shortcutCreate(lasti,"Regarder "+lastTitle, lastTitle, R.drawable.play_icon, id);
+                this.shortcutCreate(lasti, lastT, lastT, R.drawable.play_icon, id);
             }
 
-            String nextTitle = obj.getString("next_title", "");
-            if(nextTitle.length() != 0)
+            String nextUrl = obj.getString("next", "");
+            String nextT = obj.getString("nextTitle", "Épisode suivant");
+            nextT = (nextT.length() == 0 ?  "Épisode suivant" : nextT);
+            if(nextUrl.length() != 0)
             {
                 Intent nexti = this.createIntent();
-                nexti.putExtra("next", true);
+                nexti.putExtra("play", nextUrl);
 
-                this.shortcutCreate(nexti,"Regarder "+nextTitle, nextTitle, R.drawable.play_icon, id2);
+                this.shortcutCreate(nexti,nextT, nextT, R.drawable.play_icon, id2);
             }
         } catch (JSONException e) {}
 

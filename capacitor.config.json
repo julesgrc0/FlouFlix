@@ -1,6 +1,6 @@
 {
-  "appId": "com.fouflix.julesg10",
-  "appName": "Flouflix",
+  "appId": "com.flouflix.julesg10",
+  "appName": "flouflix",
   "webDir": "dist",
   "bundledWebRuntime": false
 }

@@ -14,7 +14,7 @@ export class FlouFlixWeb extends WebPlugin implements FlouFlixPlugin {
 
   setData(obj: string): Promise<void> {
       return new Promise((res, rej)=>{
-        rej();
+        res();
       })
   }
 }

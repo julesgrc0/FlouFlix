@@ -1,5 +1,4 @@
 import { registerPlugin } from "@capacitor/core";
-
 import type { FlouFlixPlugin } from "./definitions";
 
 const FlouFlix = registerPlugin<FlouFlixPlugin>("FlouFlix", {

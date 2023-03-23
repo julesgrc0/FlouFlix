@@ -1,5 +1,7 @@
 package com.fouflix.julesg10;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 
 import com.getcapacitor.JSObject;
@@ -16,31 +18,26 @@ public class FlouFlixPlugin  extends Plugin {
 
     private String EVENT_SHARE_TEXT_DATA = "onTextDataShared";
     private String EVENT_READY_CREATE = "onReadyCreate";
-    private String EVENT_PLAY_LAST = "onPlayLast";
-    private String EVENT_PLAY_NEXT = "onPlayNext";
+    private String EVENT_PLAY = "onPlay";
 
     private FlouFlixData data;
 
     public void load()
     {
         this.data = new FlouFlixData(getContext());
+
     }
 
     @PluginMethod
     public void setData(PluginCall call)
     {
-        String value = call.getString("value");
-        this.data.set(value);
-        call.resolve();
-    }
-
-    @PluginMethod
-    public void getData(PluginCall call)
-    {
         JSObject ret = new JSObject();
-        String value = this.data.get();
-        ret.put("value", value);
-        call.resolve(ret);
+        ret.put("next", call.getString("next"));
+        ret.put("last", call.getString("last"));
+        ret.put("nextTitle", call.getString("nextTitle"));
+        ret.put("lastTitle", call.getString("lastTitle"));
+        this.data.set(ret.toString());
+        call.resolve();
     }
 
     @Override
@@ -51,18 +48,23 @@ public class FlouFlixPlugin  extends Plugin {
         {
             return;
         }
-        if(this.checkIntentAction(intent,"next", EVENT_PLAY_NEXT))
+
+        String url = intent.getStringExtra("play");
+        if(url != null && url.length() != 0)
         {
+            JSObject ret = new JSObject();
+            ret.put("state", true);
+            ret.put("url", url);
+            this.notifyListeners(EVENT_PLAY, ret, true);
             return;
         }
 
-        if(this.checkIntentAction(intent,"last", EVENT_PLAY_LAST))
+        if(intent.getBooleanExtra("ready", false))
         {
-            return;
-        }
-
-        if(this.checkIntentAction(intent,"ready", EVENT_READY_CREATE))
-        {
+            JSObject ret = new JSObject();
+            ret.put("state", true);
+            ret.put("url", "");
+            this.notifyListeners(EVENT_READY_CREATE, ret, true);
             return;
         }
 
@@ -83,17 +85,4 @@ public class FlouFlixPlugin  extends Plugin {
         this.notifyListeners(EVENT_SHARE_TEXT_DATA, ret, true);
     }
 
-
-    private boolean checkIntentAction(Intent intent, String key, String event)
-    {
-        JSObject ret = new JSObject();
-        if(intent.getBooleanExtra(key, false))
-        {
-            ret.put("last", true);
-            this.notifyListeners(event, ret, true);
-            return true;
-        }
-
-        return false;
-    }
 }

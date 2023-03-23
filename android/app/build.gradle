@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 
 android {
-
     namespace 'com.fouflix.julesg10'
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {

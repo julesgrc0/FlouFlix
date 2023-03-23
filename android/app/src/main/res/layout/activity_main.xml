@@ -4,11 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#161616"
+    android:background="#141414"
     tools:context=".MainActivity">
 
     <WebView
+        android:id="@+id/webview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#161616" />
+        android:background="#141414" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
