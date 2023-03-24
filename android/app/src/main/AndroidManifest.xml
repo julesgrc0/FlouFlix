@@ -7,12 +7,23 @@
     <application android:allowBackup="true" android:icon="@drawable/flouflix_icon" android:label="@string/app_name"
         android:roundIcon="@drawable/flouflix_icon" android:supportsRtl="true" android:theme="@style/AppTheme">
 
+        <activity android:name=".LauncherActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTask" android:exported="true"
+            android:launchMode="singleTask"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:immersive="true" 
             android:turnScreenOn="true"
@@ -20,17 +31,14 @@
             android:resizeableActivity="true"
             android:supportsPictureInPicture="true">
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-            <intent-filter>
+            <!--
+              <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="@string/custom_url_scheme" />
             </intent-filter>
+            -->
         </activity>
 
         <activity android:name="com.fouflix.julesg10.FlouFlixActivity" android:exported="true"

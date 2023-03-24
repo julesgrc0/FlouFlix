@@ -6,7 +6,7 @@ import {
     ModalContent,
     Flex,
 } from "@chakra-ui/react";
-import { storage } from "../../api/storage";
+import { ItemVideoContent, storage } from "../../api/storage";
 import CInput from '../gui/CInput';
 import CButton from '../gui/CButton';
 
@@ -20,7 +20,7 @@ export type VideoModalProps = {
     isMovie: boolean;
     isOpen: boolean;
     onClose: () => void;
-    addVideo: (title: string, url: string, referer: string) => void;
+    addVideo: (title: string, videoContent: ItemVideoContent) => void;
 
     itemVideo?: SelectedVideoItem;
 }
@@ -76,7 +76,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isMovie, isOpen, onClose
                                     storage
                                         .extractVideo(url)
                                         .then((video) => {
-                                            addVideo(title, video, url);
+                                            addVideo(title, video);
                                             setTitle("");
                                             setUrl("");
                                             setLoading(false);

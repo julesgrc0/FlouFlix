@@ -39,12 +39,13 @@ const CardItem: React.FC<CardItemProps> = ({ item, openCard }) => {
                         src={item.image}
                       
                         onError={(evt: any) => {
-                            evt.target.src = "https://picsum.photos/1280/720";
+                            evt.target.src = "https://picsum.photos/720/480";
                         }}
                         borderRadius="lg"
                         w="100%"
                         h={"280px"}
                         objectFit={"cover"}
+                        objectPosition="center"
                         pos="absolute"
                         left={0}
                         top={0}

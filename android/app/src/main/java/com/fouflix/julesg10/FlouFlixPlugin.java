@@ -68,19 +68,9 @@ public class FlouFlixPlugin  extends Plugin {
             return;
         }
 
-        String text = intent.getStringExtra("text");
-        String file = intent.getStringExtra("file");
-
         JSObject ret = new JSObject();
-        if(text != null)
-        {
-            ret.put("text", text);
-        }
-
-        if(file != null)
-        {
-            ret.put("file", file);
-        }
+        ret.put("text", intent.getStringExtra("text"));
+        ret.put("file", intent.getStringExtra("file"));
 
         this.notifyListeners(EVENT_SHARE_TEXT_DATA, ret, true);
     }

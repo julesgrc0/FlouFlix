@@ -30,6 +30,7 @@ public class FlouFlixActivity extends AppCompatActivity {
                 Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
+
         String text = this.extractQuery(intent);
         if(text != null)
         {

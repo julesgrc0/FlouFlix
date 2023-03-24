@@ -13,7 +13,7 @@ import {
 import Topbar from "./Topbar";
 import { AddIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { AutofixIcon, DeleteIcon, EditIcon } from "./Icons";
-import { Item, ItemVideo, storage } from "../api/storage";
+import { Item, ItemVideo, ItemVideoContent, storage } from "../api/storage";
 
 import CInput from './gui/CInput';
 import CButton from './gui/CButton';
@@ -181,12 +181,13 @@ const EditDrawer: React.FC<EditDrawerProps> = ({
                     <Image
                         src={image}
                         onError={(evt: any) => {
-                            evt.target.src = "https://picsum.photos/1280/720";
+                            evt.target.src = "https://picsum.photos/720/480";
                         }}
                         borderRadius="lg"
                         w="100%"
                         h={"280px"}
                         objectFit={"cover"}
+                        objectPosition="center"
                     />
                     <Checkbox
                         alignSelf={"flex-start"}
@@ -297,12 +298,10 @@ const EditDrawer: React.FC<EditDrawerProps> = ({
                     });
                     setOpen(false);
                 }}
-                addVideo={(title: string, url: string, referer: string) => {
+                addVideo={(title: string, videoContent: ItemVideoContent) => {
                     if (videoItem.index != -1) {
                         videos[videoItem.index] = storage.createVideoItem(
-                            title,
-                            url,
-                            referer
+                            title, videoContent
                         );
                         setVideos(videos);
                         setVideoItem({
@@ -311,7 +310,7 @@ const EditDrawer: React.FC<EditDrawerProps> = ({
                             index: -1,
                         });
                     } else {
-                        let item = storage.createVideoItem(title, url, referer);
+                        let item = storage.createVideoItem(title, videoContent);
 
                         if (isMovie) {
                             setVideos([item]);

@@ -60,18 +60,22 @@ const ScrollCards: React.FC<ScrollCardsProps> = ({
 
     FlouFlix.addListener("onTextDataShared", (data) => {
       setCreateOpen(false);
-      if (data.text !== null) {
+      if (data.text != null)
+      {
         storage.extractVideo(data.text).then(async video => {
           await storage.createItem({
             title: data.text,
-            videos: [storage.createVideoItem(data.text ?? "", video, data.text ?? "")]
+            videos: [storage.createVideoItem(data.text ?? "", video)]
           })
           storage.getItems().then((items) => setItems(items))
         }).catch(() => { })
+      
       } else if (data.file != null) {
+      
         storage.parseFile(data.file.split("\n")).then(() => {
           storage.getItems().then((items) => setItems(items))
         }).catch(() => { })
+      
       }
     })
 

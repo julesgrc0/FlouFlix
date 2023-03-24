@@ -29,14 +29,20 @@ public class MainActivity extends BridgeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         this.registerPlugin(FlouFlixPlugin.class);
         super.onCreate(savedInstanceState);
-
-
         CastContext.getSharedInstance(this);
 
-        if(getIntent().getAction().equals(Intent.ACTION_MAIN))
+        Intent intent = getIntent();
+        if(intent == null)
         {
-            this.updateShortcuts();
+            return;
         }
+
+        try{
+             if(intent.getAction().equals(Intent.ACTION_MAIN))
+            {
+                this.updateShortcuts();
+            }
+        }catch (Exception e) {}
     }
 
     private void updateShortcuts()

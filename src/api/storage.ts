@@ -4,6 +4,7 @@ import { FlouFlix } from "../plugin/index";
 
 export interface ItemVideoContent {
   url: string;
+  image: string;
   referer: string;
   progress: number;
 }
@@ -34,7 +35,6 @@ export type ApiResultItem = {
 }
 
 
-
 export function titleCase(str) {
   let sentence = str.toLowerCase().split(" ");
   for (let i = 0; i < sentence.length; i++) {
@@ -49,36 +49,44 @@ class Storage {
 
   public isDebug() {
     return !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
-  }  
+  }
 
-  public async parseFile(lines: string[])
-  {
+  public async parseFile(lines: string[]) {
     let items: ItemVideo[] = [];
     let title: string = "";
 
     const addItem = async (line: string) => {
       let parts = line.split(":");
-      if (parts.length < 2)
-      {
+      if (parts.length < 2) {
         return
       }
 
       let ptitle = parts[0];
       let referer = line.replace(ptitle + ":", "");
-      const url = await this.extractVideo(referer);
-
-      const item = this.createVideoItem("épisode " + (items.length + 1), url, referer);
-      items.push(item);
+      try {
+        const videoContent = await this.extractVideo(referer);
+        const item = this.createVideoItem("épisode " + (items.length + 1), videoContent);
+        items.push(item);
+      } catch { }
     };
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      if ((line.startsWith("[") && line.endsWith("]")) ||  i == lines.length - 1) {
+      if ((line.startsWith("[") && line.endsWith("]")) || i == lines.length - 1) {
         await addItem(line);
 
         if (title.length != 0) {
+          let apiRes: ApiResultItem = {description:"", image:""};
+          try {
+            apiRes = await this.apiSearchVideo(title, "tv")  
+          } catch { 
+            apiRes = { description: "", image: "" }; 
+          }
+          
           await this.createItem({
             title,
+            description: apiRes.description,
+            image: apiRes.image,
             videos: items
           })
         }
@@ -91,10 +99,14 @@ class Storage {
     }
   }
 
-  public async extractVideo(referer: string): Promise<string> {
-    if(this.isDebug())
-    {
-      return new Promise((res) => setTimeout(() => res(""), 1000))
+  public async extractVideo(referer: string): Promise<ItemVideoContent> {
+    if (this.isDebug()) {
+      return new Promise((res) => setTimeout(() => res({
+        url: "",
+        referer,
+        image: "",
+        progress: 0
+      }), 1000))
     }
     return new Promise((res, rej) => {
       CapacitorHttp.get({
@@ -106,12 +118,18 @@ class Storage {
         connectTimeout: 5000,
       })
         .then((response) => {
-          const regex = /\bhttps?:\/\/\S+\.mp4\b/;
-          const mp4Urls = response.data.match(regex);
-          if (mp4Urls == null) {
-            rej();
-          }
-          res(mp4Urls != null ? mp4Urls[0] : "");
+          const MP4_regex = /\bhttps?:\/\/\S+\.mp4\b/;
+          const MP4_urls = response.data.match(MP4_regex);
+
+          const JPG_regex = /\bhttps?:\/\/\S+\.jpg\b/;
+          const JPG_urls = response.data.match(JPG_regex);
+
+          res({
+            url: MP4_urls != null ? MP4_urls[0] : "",
+            image: JPG_urls != null ? JPG_urls[0] : "",
+            referer,
+            progress: 0
+          });
         })
         .catch((err) => {
           rej(err);
@@ -150,17 +168,12 @@ class Storage {
     });
   }
 
-  public createVideoItem(title: string, url: string, referer: string) : ItemVideo
-  {
+  public createVideoItem(title: string, videoContent: ItemVideoContent): ItemVideo {
     return {
       title,
       date: new Date().getTime(),
       update: new Date().getTime(),
-      video: {
-        url,
-        referer,
-        progress: 0,
-      }
+      video: videoContent
     }
   }
 
@@ -253,18 +266,16 @@ class Storage {
     }
   }
 
-  async setItemVideoState(key: string, index: number, duration: number, time: number)
-  {
+  async setItemVideoState(key: string, index: number, duration: number, time: number) {
     let it = await this.get(key);
     if (it == null) {
       return;
     }
 
-    if(index >= it.videos.length)
-    {
+    if (index >= it.videos.length) {
       return;
     }
-    it.videos[index].video.progress = time/duration;
+    it.videos[index].video.progress = time / duration;
     await storage.set(key, it);
   }
 
@@ -273,8 +284,7 @@ class Storage {
     if (it == null) {
       return;
     }
-    if(it.videos.length <= 0)
-    {
+    if (it.videos.length <= 0) {
       return;
     }
 
