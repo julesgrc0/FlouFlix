@@ -1,35 +1,37 @@
+
+import React from "react";
 import {
-    Icon
+    Icon, IconProps
 } from "@chakra-ui/react";
 
 
 export
-    function PlayIcon(props) {
+    function PlayIcon(props: IconProps) {
     return <Icon viewBox='0 0 48 48' {...props}>
         <path fill='currentColor' d="M18.3 36.4q-.75.5-1.525.05Q16 36 16 35.1V12.6q0-.9.775-1.35.775-.45 1.525.05L36 22.6q.7.45.7 1.25T36 25.1Z" />
     </Icon>
 }
 
 
-export function DotsIcon(props) {
+export function DotsIcon(props: IconProps) {
     return <Icon viewBox="0 0 48 48" {...props}>
         <path fill='currentColor' d="M10.4 26.4q-1 0-1.7-.7T8 24q0-1 .7-1.7t1.7-.7q1 0 1.7.7t.7 1.7q0 1-.7 1.7t-1.7.7Zm13.6 0q-1 0-1.7-.7t-.7-1.7q0-1 .7-1.7t1.7-.7q1 0 1.7.7t.7 1.7q0 1-.7 1.7t-1.7.7Zm13.6 0q-1 0-1.7-.7t-.7-1.7q0-1 .7-1.7t1.7-.7q1 0 1.7.7T40 24q0 1-.7 1.7t-1.7.7Z" />
     </Icon>
 }
 
-export function DeleteIcon(props) {
+export function DeleteIcon(props: IconProps) {
     return <Icon viewBox="0 0 48 48" {...props}>
         <path fill='currentColor' d="M13.05 42q-1.2 0-2.1-.9-.9-.9-.9-2.1V10.5H9.5q-.65 0-1.075-.425Q8 9.65 8 9q0-.65.425-1.075Q8.85 7.5 9.5 7.5h7.9q0-.65.425-1.075Q18.25 6 18.9 6h10.2q.65 0 1.075.425.425.425.425 1.075h7.9q.65 0 1.075.425Q40 8.35 40 9q0 .65-.425 1.075-.425.425-1.075.425h-.55V39q0 1.2-.9 2.1-.9.9-2.1.9Zm5.3-8.8q0 .65.425 1.075.425.425 1.075.425.65 0 1.075-.425.425-.425.425-1.075V16.25q0-.65-.425-1.075-.425-.425-1.075-.425-.65 0-1.075.425-.425.425-.425 1.075Zm8.3 0q0 .65.425 1.075.425.425 1.075.425.65 0 1.075-.425.425-.425.425-1.075V16.25q0-.65-.425-1.075-.425-.425-1.075-.425-.65 0-1.075.425-.425.425-.425 1.075Z" />
     </Icon>
 }
 
-export function EditIcon(props) {
+export function EditIcon(props: IconProps) {
    return <Icon viewBox="0 0 48 48" {...props}>
        <path fill='currentColor' d="M11 44q-1.2 0-2.1-.9Q8 42.2 8 41V7q0-1.2.9-2.1Q9.8 4 11 4h15.75q.6 0 1.175.25.575.25.975.65l10.2 10.2q.4.4.65.975T40 17.25v8.65l-14 14V44Zm18.75 0q-.3 0-.525-.225Q29 43.55 29 43.25v-1.5q0-.3.1-.55.1-.25.35-.5l9.7-9.65 2.9 2.75-9.75 9.75q-.25.25-.5.35-.25.1-.55.1ZM43.4 32.45l-2.85-2.8 1.6-1.55q.45-.45 1.075-.425.625.025 1.025.425l.65.7q.45.45.45 1.075t-.45 1.075ZM27.5 18H37L26 7v9.5q0 .65.425 1.075Q26.85 18 27.5 18Z" />
     </Icon>
 }
 
-export function AutofixIcon(props)
+export function AutofixIcon(props: IconProps)
 {
     return <Icon viewBox="0 0 48 48" {...props}>
         <path fill='currentColor' d="M40.6 12.85 38.9 9.1l-3.75-1.7 3.75-1.7 1.7-3.75 1.7 3.75 3.75 1.7-3.75 1.7Zm-24.1 0L14.8 9.1l-3.75-1.7 3.75-1.7 1.7-3.75 1.7 3.75 3.75 1.7-3.75 1.7Zm24.1 24.1-1.7-3.75-3.75-1.7 3.75-1.7 1.7-3.75 1.7 3.75 3.75 1.7-3.75 1.7ZM9.35 43.4 4.6 38.65q-.55-.55-.6-1.275-.05-.725.6-1.375l22.5-22.5q.6-.6 1.45-.6t1.45.6l4.5 4.5q.6.6.6 1.45t-.6 1.45L12 43.4q-.6.6-1.325.6t-1.325-.6ZM28.5 22.6l3.1-3.1-3.1-3.1-3.1 3.1Z" />

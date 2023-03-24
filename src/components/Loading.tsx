@@ -1,7 +1,9 @@
 import { Box } from '@chakra-ui/react';
+import React from 'react';
 
 
-export default function Loading({ }) {
+export default function Loading() 
+{
     return <Box
         w="100%"
         h="100%"

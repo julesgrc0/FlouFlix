@@ -3,7 +3,7 @@ import React from 'react';
 
 export function useNetwork()
 {
-    const [connected, setConnected] = React.useState(true);
+    const [connected, setConnected] = React.useState<boolean>(true);
 
     React.useEffect(()=>{
 

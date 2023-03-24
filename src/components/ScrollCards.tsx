@@ -2,7 +2,7 @@ import React from "react";
 import { Box } from "@chakra-ui/react";
 import { FlouFlix } from '../plugin/index';
 import { useNetwork } from '../hooks/useNetwork';
-import { storage } from '../api/storage';
+import { Item, storage } from '../api/storage';
 import { useNavigate } from "react-router-dom";
 import { Capacitor } from "@capacitor/core";
 import { StatusBar } from "@capacitor/status-bar";
@@ -10,20 +10,30 @@ import { NavigationBar } from "@hugotomazi/capacitor-navigation-bar";
 
 import CardItem from "./CardItem";
 
+type ScrollCardsProps ={
+  setShowBorder: (show: boolean) => void;
+  setCardOpen: (open: boolean) => void;
+  setCreateOpen: (open: boolean) => void;
+  setSelectedCard: (item?: Item) => void;
 
-export default function ScrollCards({
+  showBorder: boolean,
+  isCardOpen: boolean,
+  isCreateOpen: boolean,
+};
+
+const ScrollCards: React.FC<ScrollCardsProps> = ({
   setShowBorder,
   setCardOpen,
   setCreateOpen,
-
   setSelectedCard,
+
   showBorder,
   isCardOpen,
   isCreateOpen,
 
-}) {
+}) => {
   const { connected } = useNetwork();
-  const [items, setItems] = React.useState([]);
+  const [items, setItems] = React.useState<Item[]>([]);
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -50,13 +60,11 @@ export default function ScrollCards({
 
     FlouFlix.addListener("onTextDataShared", (data) => {
       setCreateOpen(false);
-      if (data.text != null) {
+      if (data.text !== null) {
         storage.extractVideo(data.text).then(async video => {
-          const referer = data.text;
-
           await storage.createItem({
-            title: referer,
-            videos: [storage.createVideoItem(referer, video, referer)]
+            title: data.text,
+            videos: [storage.createVideoItem(data.text ?? "", video, data.text ?? "")]
           })
           storage.getItems().then((items) => setItems(items))
         }).catch(() => { })
@@ -90,7 +98,7 @@ export default function ScrollCards({
       bg={"#141414"}
       overflowY="auto"
       overflowX={"hidden"}
-      onScroll={(evt) => {
+      onScroll={(evt: any) => {
         if (showBorder && evt.target.scrollTop < 20) {
           setShowBorder(false);
         } else if (!showBorder && evt.target.scrollTop >= 20) {
@@ -115,3 +123,5 @@ export default function ScrollCards({
     </Box>
   );
 }
+
+export default  ScrollCards;

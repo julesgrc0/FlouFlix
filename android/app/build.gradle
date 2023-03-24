@@ -19,15 +19,16 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            //shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 repositories {
-    flatDir{
+    /*flatDir{
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
-    }
+    }*/
 }
 
 dependencies {

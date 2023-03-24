@@ -8,13 +8,20 @@ import {
     Text,
     CardFooter,
 } from "@chakra-ui/react";
-import { color, motion } from "framer-motion";
+import { motion } from "framer-motion";
+import { Item } from "../api/storage"
 
-export default function CardItem({ item, openCard }) {
+type CardItemProps = {
+    item: Item;
+    openCard: React.MouseEventHandler<any>;
+};
+
+const CardItem: React.FC<CardItemProps> = ({ item, openCard }) => {
    
     const date = new Date(item.date);
     const dateStr = " le " +date.toLocaleDateString('fr', { day:"2-digit", month:"2-digit"}) + " à " +date.toLocaleTimeString('fr', { hour:"2-digit", minute:"2-digit" })
     const progress = item.videos.length > 0 ? Math.round(item.videos[0].video.progress * 100) : 0;
+    
     return (
         <motion.div
             initial={{
@@ -31,7 +38,7 @@ export default function CardItem({ item, openCard }) {
                     <Image
                         src={item.image}
                       
-                        onError={(evt) => {
+                        onError={(evt: any) => {
                             evt.target.src = "https://picsum.photos/1280/720";
                         }}
                         borderRadius="lg"
@@ -81,3 +88,5 @@ export default function CardItem({ item, openCard }) {
         </motion.div>
     );
 }
+
+export default CardItem;

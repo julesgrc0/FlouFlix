@@ -3,88 +3,57 @@ import {
     Drawer,
     DrawerOverlay,
     DrawerContent,
-    Input,
     Image,
-    VStack,
     Text,
-    Button,
     Box,
     Checkbox,
     IconButton,
-    Modal,
-    ModalOverlay,
-    ModalContent,
     Flex,
 } from "@chakra-ui/react";
 import Topbar from "./Topbar";
 import { AddIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { AutofixIcon, DeleteIcon, EditIcon } from "./Icons";
-import { storage } from "../api/storage";
+import { Item, ItemVideo, storage } from "../api/storage";
 
-function CInput({ placeholder, text, setText }) {
-    return (
-        <Input
-            border={"2px solid"}
-            borderRadius="md"
-            bg="transparent"
-            p={5}
-            mb={4}
-            focusBorderColor={"white"}
-            borderColor={"gray.800"}
-            color={"white"}
-            outline={"none"}
-            w={"100%"}
-            placeholder={placeholder}
-            value={text}
-            onChange={(evt) => {
-                setText(evt.target.value);
-            }}
-        />
-    );
+import CInput from './gui/CInput';
+import CButton from './gui/CButton';
+import { VideoModal, SelectedVideoItem } from './modal/VideoAddModal';
+import { ConfirmClose } from './modal/ConfirmCloseVideos';
+
+type EditDrawerProps = {
+    isCreateOpen: boolean;
+    setCreateOpen: (open: boolean) => void,
+    item?: Item;
+};
+
+
+
+type CreateDrawerProps = {
+    isCreateOpen: boolean;
+    selectedCard?: Item;
+    setCreateOpen: (open: boolean) => void;
+    setSelectedCard: (item?: Item) => void;
 }
 
-function CButton({ text, loading, onClick, fill }) {
-    return (
-        <Button
-            onClick={onClick}
-            isLoading={loading}
-            border={"2px solid"}
-            borderColor="gray.600"
-            p={3}
-            borderRadius="md"
-            bg={fill ? "gray.600" : "#141414"}
-            color={"white"}
-            _hover={{ background: fill ? "gray.600" : "#141414" }}
-            w={"100%"}
-        >
-            {text}
-        </Button>
-    );
-}
 
-function EditDrawer({
+const EditDrawer: React.FC<EditDrawerProps> = ({
     isCreateOpen,
     setCreateOpen,
+    item
+}) => {
+    const [title, setTitle] = React.useState<string>("");
+    const [desc, setDesc] = React.useState<string>("");
+    const [image, setImage] = React.useState<string>("");
 
-    dtitle,
-    ddesc,
-    dimage,
-    dismovie,
-    dvideos,
-    did,
-}) {
-    const [title, setTitle] = React.useState("");
-    const [desc, setDesc] = React.useState("");
-    const [image, setImage] = React.useState("");
-    const [isMovie, setIsMovie] = React.useState(true);
-    const [videos, setVideos] = React.useState([]);
+    const [isOpen, setOpen] = React.useState<boolean>(false);
+    const [confirmOpen, setConfirmOpen] = React.useState<boolean>(false);
+    const [loading, setLoading] = React.useState<boolean>(false);
 
-    const [isOpen, setOpen] = React.useState(false);
-    const [confirmOpen, setConfirmOpen] = React.useState(false);
-    const [loading, setLoading] = React.useState(false);
-    const [autoComplete, setAutoComplete] = React.useState(true);
+    const [isMovie, setIsMovie] = React.useState<boolean>(true);
+    const [autoComplete, setAutoComplete] = React.useState<boolean>(true);
 
-    const [videoItem, setVideoItem] = React.useState({
+    const [videos, setVideos] = React.useState<ItemVideo[]>([]);
+    const [videoItem, setVideoItem] = React.useState<SelectedVideoItem>({
         title: undefined,
         url: undefined,
         index: -1,
@@ -95,18 +64,18 @@ function EditDrawer({
             return;
         }
 
-        if (did != undefined) {
-            setTitle(dtitle);
-            setDesc(ddesc);
-            setIsMovie(dismovie);
-            setVideos(dvideos);
-            setImage(dimage);
+        if (item != undefined) {
+            setTitle(item.title);
+            setDesc(item.description);
+            setIsMovie(item.is_movie);
+            setImage(item.image);
+            setVideos(item.videos);
         } else {
             setTitle("");
             setDesc("");
             setIsMovie(true);
-            setVideos([]);
             setImage("");
+            setVideos([]);
         }
     }, [isCreateOpen]);
 
@@ -136,8 +105,8 @@ function EditDrawer({
         setLoading(true);
 
         (async () => {
-            if (did != undefined) {
-                await storage.remove(did);
+            if (item !== undefined) {
+                await storage.remove(item.id);
             }
             await storage.createItem({
                 title,
@@ -164,7 +133,7 @@ function EditDrawer({
                 bg={"#141414"}
             >
                 <Topbar
-                    title={did ? "Modification" : "Nouvelle vidéo"}
+                    title={item !== undefined ? "Modification" : "Nouvelle vidéo"}
                     showBorder={false}
                     icons={[
                         {
@@ -205,14 +174,13 @@ function EditDrawer({
                             bg="transparent"
                             _hover={{ background: "transparent" }}
                             color={!autoComplete ? "gray.800" : "gray.200"}
-                            border="2px solid"
-                        />
+                            border="2px solid" aria-label={""} />
                     </Flex>
                     <CInput placeholder="Description" text={desc} setText={setDesc} />
                     <CInput placeholder="Image http://" text={image} setText={setImage} />
                     <Image
                         src={image}
-                        onError={(evt) => {
+                        onError={(evt: any) => {
                             evt.target.src = "https://picsum.photos/1280/720";
                         }}
                         borderRadius="lg"
@@ -254,8 +222,7 @@ function EditDrawer({
                                         index: -1,
                                     });
                                     setOpen(true);
-                                }}
-                            />
+                                }} aria-label={""} />
                         )}
 
                         {videos.map((vid, index) => (
@@ -288,8 +255,7 @@ function EditDrawer({
                                             index,
                                         });
                                         setOpen(true);
-                                    }}
-                                />
+                                    }} aria-label={""} />
                                 <IconButton
                                     icon={<DeleteIcon />}
                                     bg="transparent"
@@ -297,35 +263,32 @@ function EditDrawer({
                                     border={"1px solid"}
                                     borderColor="gray.900"
                                     onClick={() => {
-                                        let vids = [...videos]
+                                        let vids = [...videos];
                                         vids.splice(index, 1);
                                         setVideos(vids);
-                                    }}
-                                />
+                                    }} aria-label={""} />
                             </Flex>
                         ))}
                     </Box>
-                    {did == undefined && (
+                    {item === undefined && (
                         <CButton
                             text={"Ajouter " + (!isMovie ? "ma série" : "mon film")}
                             onClick={onCreate}
-                            loading={loading}
-                        />
+                            loading={loading} fill={false} />
                     )}
-                    {did && (
+                    {item !== undefined && (
                         <CButton
                             text={"Mettre à jour"}
                             onClick={onCreate}
-                            loading={loading}
-                        />
+                            loading={loading} fill={false} />
                     )}
                 </Box>
             </DrawerContent>
             <VideoModal
                 isOpen={isOpen}
                 isMovie={isMovie}
-                dtitle={videoItem.title}
-                durl={videoItem.url}
+                itemVideo={videoItem}
+
                 onClose={() => {
                     setVideoItem({
                         title: undefined,
@@ -334,7 +297,7 @@ function EditDrawer({
                     });
                     setOpen(false);
                 }}
-                addVideo={(title, url, referer) => {
+                addVideo={(title: string, url: string, referer: string) => {
                     if (videoItem.index != -1) {
                         videos[videoItem.index] = storage.createVideoItem(
                             title,
@@ -376,104 +339,15 @@ function EditDrawer({
     );
 }
 
-function ConfirmClose({ isOpen, onClose, onConfirm }) {
-    return (
-        <Modal
-            isOpen={isOpen}
-            onClose={onClose}
-            isCentered={true}
-            closeOnOverlayClick={true}
-        >
-            <ModalOverlay />
-            <ModalContent bg={"#141414"} w={"90%"} p={5}>
-                <Text color={"white"}>Toutes vos vidéo ajouter seront perdu !</Text>
-                <Flex mt="30px" gap={2} w="100%">
-                    <CButton onClick={onClose} text="Annuler" loading={false} />
-                    <CButton fill={true} onClick={onConfirm} text="Confirmer" />
-                </Flex>
-            </ModalContent>
-        </Modal>
-    );
-}
 
-function VideoModal({ isMovie, isOpen, onClose, addVideo, dtitle, durl }) {
-    const [title, setTitle] = React.useState("");
-    const [url, setUrl] = React.useState("");
-    const [loading, setLoading] = React.useState(false);
 
-    const close = React.useCallback(() => {
-        setTitle("");
-        setUrl("");
-        setLoading(false);
-        onClose();
-    }, [onClose, setUrl, setTitle, setLoading]);
-
-    React.useEffect(() => {
-        setTitle(dtitle ?? "");
-        setUrl(durl ?? "");
-    }, [dtitle, durl]);
-
-    return (
-        <Modal
-            isOpen={isOpen}
-            onClose={close}
-            isCentered={true}
-            closeOnOverlayClick={true}
-        >
-            <ModalOverlay />
-            <ModalContent bg={"#141414"} w={"90%"} p={5}>
-                <VStack>
-                    {!isMovie && (
-                        <CInput
-                            placeholder={"Épisode 1..."}
-                            text={title}
-                            setText={setTitle}
-                        />
-                    )}
-                    <CInput
-                        placeholder={"https://player/video-id.html"}
-                        text={url}
-                        setText={setUrl}
-                    />
-                </VStack>
-                <Flex mt="30px" gap={2} w="100%">
-                    <CButton onClick={close} text="Annuler" loading={false} />
-                    <CButton
-                        fill={true}
-                        onClick={() => {
-                            if (!loading) {
-                                setLoading(true);
-                                setTimeout(() => {
-                                    storage
-                                        .extractVideo(url)
-                                        .then((video) => {
-                                            addVideo(title, video, url);
-                                            setTitle("");
-                                            setUrl("");
-                                            setLoading(false);
-                                        })
-                                        .catch(() => {
-                                            setUrl("");
-                                            setLoading(false);
-                                        });
-                                }, 500);
-                            }
-                        }}
-                        loading={loading}
-                        text="Ajouter"
-                    />
-                </Flex>
-            </ModalContent>
-        </Modal>
-    );
-}
-
-export default function CreateDrawer({
+const CreateDrawer: React.FC<CreateDrawerProps> = ({
     isCreateOpen,
-    setCreateOpen,
     selectedCard,
+
+    setCreateOpen,
     setSelectedCard,
-}) {
+}) => {
     if (selectedCard == undefined) {
         return (
             <EditDrawer isCreateOpen={isCreateOpen} setCreateOpen={setCreateOpen} />
@@ -486,12 +360,9 @@ export default function CreateDrawer({
                 setCreateOpen(value);
                 setSelectedCard(undefined);
             }}
-            dtitle={selectedCard.title}
-            ddesc={selectedCard.description}
-            dimage={selectedCard.image}
-            dismovie={selectedCard.is_movie}
-            dvideos={selectedCard.videos}
-            did={selectedCard.id}
+            item={selectedCard}
         />
     );
 }
+
+export default CreateDrawer;

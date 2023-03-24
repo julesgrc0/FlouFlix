@@ -1,7 +1,18 @@
+import React from "react";
 import { Flex, Heading, IconButton } from "@chakra-ui/react";
 
-export default function Topbar({ title, showBorder, icons }) {
+type TopBarIcon = {
+    click: React.MouseEventHandler<HTMLButtonElement>;
+    icon: React.ReactElement<any>;
+};
 
+type TopBarProps = {
+    title: string;
+    showBorder: boolean;
+    icons: TopBarIcon[];
+};
+
+const Topbar: React.FC<TopBarProps> = ({ title, showBorder, icons }) => {
     return (
         <Flex
             padding={5}
@@ -26,9 +37,19 @@ export default function Topbar({ title, showBorder, icons }) {
             </Heading>
             <Flex columnGap={8}>
                 {icons.map((icon, index) => (
-                    <IconButton bg='transparent' _hover={{ background:'transparent' }} key={index} color="white"  icon={icon.icon} onClick={icon.click} />
+                    <IconButton
+                        bg="transparent"
+                        _hover={{ background: "transparent" }}
+                        key={index}
+                        color="white"
+                        icon={icon.icon}
+                        onClick={icon.click}
+                        aria-label={""}
+                    />
                 ))}
             </Flex>
         </Flex>
     );
-}
+};
+
+export default Topbar;

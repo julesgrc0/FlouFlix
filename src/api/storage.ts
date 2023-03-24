@@ -2,18 +2,20 @@ import { Preferences } from "@capacitor/preferences";
 import { CapacitorHttp } from "@capacitor/core";
 import { FlouFlix } from "../plugin/index";
 
-interface ItemVideo {
+export interface ItemVideoContent {
+  url: string;
+  referer: string;
+  progress: number;
+}
+
+export interface ItemVideo {
   title: string;
   date: number;
   update: number;
-  video: {
-    url: string;
-    referer: string;
-    progress: number;
-  };
+  video: ItemVideoContent;
 }
 
-interface Item {
+export interface Item {
   id: string;
   title: string;
   description: string;
@@ -24,6 +26,13 @@ interface Item {
   last: number;
   next: number;
 }
+
+
+export type ApiResultItem = {
+  image: string;
+  description: string;
+}
+
 
 
 export function titleCase(str) {
@@ -82,7 +91,7 @@ class Storage {
     }
   }
 
-  public async extractVideo(referer: string): Promise<any> {
+  public async extractVideo(referer: string): Promise<string> {
     if(this.isDebug())
     {
       return new Promise((res) => setTimeout(() => res(""), 1000))
@@ -110,7 +119,7 @@ class Storage {
     });
   }
 
-  public async apiSearchVideo(title: string, type: "tv" | "movie") {
+  public async apiSearchVideo(title: string, type: "tv" | "movie"): Promise<ApiResultItem> {
     const API_KEY = "675eba7a24c6d06fa76bf002db96f803";
     return new Promise((res, rej) => {
       CapacitorHttp.get({

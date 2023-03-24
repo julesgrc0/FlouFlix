@@ -19,19 +19,30 @@ import {
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { PlayIcon, EditIcon, DeleteIcon } from "./Icons";
 import Topbar from "./Topbar";
-import { storage } from "../api/storage";
+import { Item, storage } from "../api/storage";
 import { useNavigate } from "react-router-dom";
 
-export default function CardDrawer({
+import { DeleteModal } from './modal/DeleteModal'
+
+type CardDrawerProps ={
+    setSelectedCard: (item?: Item) => void;
+    selectedCard?: Item;
+    isCardOpen: boolean;
+    setCardOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setCreateOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const CardDrawer: React.FC<CardDrawerProps> = ({
     setSelectedCard,
     selectedCard,
     isCardOpen,
     setCardOpen,
     setCreateOpen
-}) {
+}) => {
     const [isOpenDelete, setIsOpenDelete] = React.useState(false);
     const navigate = useNavigate();
-    const item = {
+
+    const item: Item = {
         id: "0",
         title: "",
         description: "",
@@ -39,8 +50,11 @@ export default function CardDrawer({
         date: new Date().getTime(),
         is_movie: true,
         videos: [],
+        last: 0,
+        next: 0,
         ...selectedCard,
     };
+
     const date = new Date(item.date);
     const dateStr =
         " le " +
@@ -49,7 +63,7 @@ export default function CardDrawer({
         date.toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
 
 
-    const play = React.useCallback((id, index) => {
+    const play = React.useCallback((id: string, index: number) => {
         navigate("/video/" + id + "/" + index)
     }, [navigate])
 
@@ -80,7 +94,7 @@ export default function CardDrawer({
                 <Box pos={"relative"} overflowY="scroll">
                     <Image
                         src={item.image}
-                        onError={(evt) => {
+                        onError={(evt: any) => {
                             evt.target.src = "https://picsum.photos/1280/720";
                         }}
                         w="100%"
@@ -121,8 +135,7 @@ export default function CardDrawer({
                             onClick={() => {
                                 setCreateOpen(true);
                                 setCardOpen(false);
-                            }}
-                        />
+                            } } aria-label={""}                        />
                         <IconButton
                             icon={<DeleteIcon boxSize={5} />}
                             color="white"
@@ -134,8 +147,7 @@ export default function CardDrawer({
                             }}
                             onClick={() => {
                                 setIsOpenDelete(true);
-                            }}
-                        />
+                            } } aria-label={""}                        />
                     </Flex>
                     <Heading
                         fontSize="2xl"
@@ -157,7 +169,7 @@ export default function CardDrawer({
                     {!item.is_movie && item.videos.map((vid, index) =>
                         <Flex key={index} borderBottom={index + 1 == item.videos.length ? "none" : "1px solid"} p={2} color="white" justifyContent={"space-between"} alignItems="center">
                             <Text bg='transparent' p={2} textTransform="uppercase" w={"60%"}>{item.is_movie ? item.title : vid.title}</Text>
-                            <Text>{Math.round(vid.video.progress)}%</Text>
+                            <Text>{Math.round(vid.video.progress * 100)}%</Text>
                             {!item.is_movie && <Button bg='transparent' border='1px solid' borderColor={"gray.600"}
                                 onClick={() => {
                                     play(item.id, index)
@@ -175,54 +187,16 @@ export default function CardDrawer({
                     }
                 }}
                 onDelete={async () => {
-                    await storage.remove(selectedCard.id)
-                    setSelectedCard(undefined)
+                    if (selectedCard !== undefined)
+                    {
+                        await storage.remove(selectedCard.id)
+                        setSelectedCard(undefined)
+                    }
                 }}
             />
         </Drawer>
     );
 }
 
-function DeleteModal({ isOpen, onClose, onDelete }) {
-    const [loading, setLoading] = React.useState(false);
-    return (
-        <Modal
-            isOpen={isOpen}
-            onClose={() => onClose(false)}
-            isCentered={true}
-            closeOnOverlayClick={true}
-        >
-            <ModalOverlay />
+export default CardDrawer;
 
-            <ModalContent bg={"#141414"} w={"90%"} p={5}>
-                <Heading color={"white"} fontSize="2xl">
-                    Confirmer la supression
-                </Heading>
-                <HStack mt={10}>
-                    <Button w={"100%"} onClick={() => onClose(false)}>
-                        Annuler
-                    </Button>
-                    <Button
-                        isLoading={loading}
-                        w={"100%"}
-                        _hover={{ background: "transparent" }}
-                        bg="transparent"
-                        border={"2px solid"}
-                        borderColor="gray.400"
-                        color="gray.400"
-                        onClick={() => {
-                            setLoading(true)
-                            setTimeout(async () => {
-                                await onDelete();
-                                setLoading(false);
-                                onClose(true);
-                            }, 400);
-                        }}
-                    >
-                        Confirmer
-                    </Button>
-                </HStack>
-            </ModalContent>
-        </Modal>
-    );
-}

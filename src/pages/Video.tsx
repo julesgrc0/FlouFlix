@@ -2,14 +2,16 @@ import React from "react";
 import {  useNavigate, useParams } from "react-router-dom";
 
 import { App } from "@capacitor/app";
-import { CapacitorVideoPlayer } from "capacitor-video-player";
+import { CapacitorVideoPlayer as player } from "capacitor-video-player";
 import { StatusBar } from "@capacitor/status-bar";
 import { NavigationBar } from "@hugotomazi/capacitor-navigation-bar";
 import { ScreenOrientation, OrientationType } from '@capawesome/capacitor-screen-orientation';
-import { storage, titleCase } from "../api/storage";
+import { Item, ItemVideoContent, storage, titleCase } from "../api/storage";
 
-function InitPlayer(id, title, video, callback, smtitle = undefined) {
-    CapacitorVideoPlayer.initPlayer({
+const VideoPlayerPlugin: any = player;
+
+function InitPlayer(id: string, title: string, video: ItemVideoContent, callback, smtitle = "") {
+    VideoPlayerPlugin.initPlayer({
         mode: "fullscreen",
         url: video.url,
         headers: {
@@ -47,23 +49,24 @@ function InitPlayer(id, title, video, callback, smtitle = undefined) {
         });
 }
 
-
-
 export default function Video() {
     const { id, index } = useParams();
     const navigate = useNavigate();
 
+    const itemId = id ?? "";
+    const itemIndex = parseInt(index ?? "");
+
     const exit = React.useCallback(() => {
         (async () => {
             await ScreenOrientation.lock({ type: OrientationType.PORTRAIT });
-            await CapacitorVideoPlayer.stopAllPlayers();
+            await VideoPlayerPlugin.stopAllPlayers();
         })().then(() => {
             navigate("/"+id);
         })
     }, [navigate]);
 
     const init = React.useCallback(
-        (item, index) => {
+        (item: Item, index: number) => {
 
             InitPlayer(
                 item.id,
@@ -84,25 +87,23 @@ export default function Video() {
         [exit]);
 
     const saveVideoState = React.useCallback(async () => {
-        let iindex = parseInt(index)
-        if (isNaN(iindex)) {
+        if (isNaN(itemIndex)) {
             return;
         }
 
-        const duration = (await CapacitorVideoPlayer.getDuration({ playerId: id }));
-        const time = (await CapacitorVideoPlayer.getCurrentTime({ playerId: id }));
+        const duration = (await VideoPlayerPlugin.getDuration({ playerId: id }));
+        const time = (await VideoPlayerPlugin.getCurrentTime({ playerId: id }));
         if (isNaN(duration.value) || isNaN(time.value)) {
             return;
         }
-        await storage.setItemVideoState(id, iindex, duration.value, time.value)
+        await storage.setItemVideoState(id ?? "", itemIndex, duration.value, time.value)
     }, [])
 
     React.useEffect(() => {
-        storage.get(id).then((item) => {
-            let iindex = parseInt(index);
-            if (item != null && !isNaN(iindex) && iindex < item.videos.length) {
-                storage.watchVideo(id, iindex).then(() => {
-                    init(item, iindex)
+        storage.get(id ?? "").then((item) => {
+            if (item != null && !isNaN(itemIndex) && itemIndex < item.videos.length) {
+                storage.watchVideo(itemId, itemIndex).then(() => {
+                    init(item, itemIndex)
                 }).catch(() => {
                     exit();
                 })
@@ -118,30 +119,30 @@ export default function Video() {
 
         App.addListener("pause", () => {
 
-            CapacitorVideoPlayer.pause({
+            VideoPlayerPlugin.pause({
                 playerId: id
             })
             saveVideoState()
         })
         App.addListener("resume", () => {
-            CapacitorVideoPlayer.play({
+            VideoPlayerPlugin.play({
                 playerId: id
             })
         })
 
 
-        CapacitorVideoPlayer.addListener("jeepCapVideoPlayerPlay", () => {
+        VideoPlayerPlugin.addListener("jeepCapVideoPlayerPlay", () => {
             saveVideoState()
         })
-        CapacitorVideoPlayer.addListener("jeepCapVideoPlayerPause", () => {
+        VideoPlayerPlugin.addListener("jeepCapVideoPlayerPause", () => {
             saveVideoState()
         })
 
-        CapacitorVideoPlayer.addListener("jeepCapVideoPlayerExit", (evt) => {
+        VideoPlayerPlugin.addListener("jeepCapVideoPlayerExit", (evt) => {
             saveVideoState()
             exit();
         });
-        CapacitorVideoPlayer.addListener("jeepCapVideoPlayerEnded", (evt) => {
+        VideoPlayerPlugin.addListener("jeepCapVideoPlayerEnded", (evt) => {
             saveVideoState()
             exit();
         });
@@ -149,7 +150,7 @@ export default function Video() {
 
         return () => {
             App.removeAllListeners();
-            CapacitorVideoPlayer.removeAllListeners();
+            VideoPlayerPlugin.removeAllListeners();
         };
     }, []);
 
