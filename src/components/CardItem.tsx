@@ -13,15 +13,17 @@ import { Item } from "../api/storage"
 
 type CardItemProps = {
     item: Item;
+    delay: number;
     openCard: React.MouseEventHandler<any>;
 };
 
-const CardItem: React.FC<CardItemProps> = ({ item, openCard }) => {
+const CardItem: React.FC<CardItemProps> = ({ item, delay, openCard }) => {
    
     const date = new Date(item.date);
     const dateStr = " le " +date.toLocaleDateString('fr', { day:"2-digit", month:"2-digit"}) + " à " +date.toLocaleTimeString('fr', { hour:"2-digit", minute:"2-digit" })
     const progress = item.videos.length > 0 ? Math.round(item.videos[0].video.progress * 100) : 0;
-    
+    const [imageShow, setShowImage] = React.useState<boolean>(false);
+
     return (
         <motion.div
             initial={{
@@ -31,17 +33,21 @@ const CardItem: React.FC<CardItemProps> = ({ item, openCard }) => {
                 opacity: 1,
             }}
             viewport={{ once: true }}
-            transition={{ duration: 1 }}
+            transition={{ duration: 1, delay }}
         >
             <Card bg='transparent' h={"335px"} p={1}>
                 <CardBody pos='relative' h='280px' onClick={openCard}>
                     <Image
                         src={item.image}
-                      
                         onError={(evt: any) => {
                             evt.target.src = "https://picsum.photos/720/480";
                         }}
+                        onLoad={(evt: any)=>{
+                            setShowImage(true);
+                        }}
+                        filter={imageShow ? "blur(0px)" : "blur(100px)"}
                         borderRadius="lg"
+                        transition={"300ms"}
                         w="100%"
                         h={"280px"}
                         objectFit={"cover"}

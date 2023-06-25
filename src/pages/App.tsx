@@ -2,8 +2,22 @@ import * as React from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Loading from '../components/Loading';
 
-import Home from './Home';
-import Video from './Video';
+// import Home from './Home';
+// import Video from './Video';
+
+const Home = React.lazy(() => import('./Home'));
+const Video = React.lazy(() => import('./Video'));
+
+interface LazyLoadingProps {
+    Component: any
+};
+
+function LazyLoading({ Component }: LazyLoadingProps)
+{
+    return <React.Suspense fallback={<Loading />}>
+        <Component />
+    </React.Suspense>
+}
 
 export default function App() {
     return (
@@ -21,18 +35,18 @@ export default function App() {
                 <Routes>
                     <Route
                         path='/video/:id/:index'
-                        element={<Video />}
+                        element={<LazyLoading Component={Video} />}
                         errorElement={<Loading />}
                     />
                     <Route
                         path='/:id'
                         element={<Home />}
-                        errorElement={<Loading />}
+                        errorElement={<LazyLoading Component={Home} />}
                     />
                     <Route
                         path='*'
                         element={<Home />}
-                        errorElement={<Loading />}
+                        errorElement={<LazyLoading Component={Home} />}
                     />
                 </Routes>
             </BrowserRouter>

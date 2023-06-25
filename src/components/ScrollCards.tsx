@@ -86,6 +86,8 @@ const ScrollCards: React.FC<ScrollCardsProps> = ({
       }
     })
     FlouFlix.addListener("onReadyCreate", (evt) => {
+      setSelectedCard(undefined);
+      setCardOpen(false);
       setCreateOpen(true);
     })
 
@@ -110,10 +112,11 @@ const ScrollCards: React.FC<ScrollCardsProps> = ({
         }
       }}
     >
-      <React.Suspense>
+      <React.Fragment>
         {items.map((it, index) => (
           <CardItem
             key={index}
+            delay={index < 5 ? index * 0.5 : 0}
             item={it}
             openCard={() => {
               setSelectedCard(it);
@@ -121,7 +124,7 @@ const ScrollCards: React.FC<ScrollCardsProps> = ({
             }}
           />
         ))}
-      </React.Suspense>
+      </React.Fragment>
 
       <Box w="100%" h="40px"></Box>
     </Box>

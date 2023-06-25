@@ -180,13 +180,13 @@ const CardDrawer: React.FC<CardDrawerProps> = ({
                             <Box key={index}>
                                 <Image
                                     w="100%"
-                                    maxH={"150px"}
+                                    maxH={"250px"}
                                     objectFit={"cover"}
                                     objectPosition="center"
                                     src={vid.video.image}
                                     onError={(evt: any) => {
-                                        // evt.target.src = "https://picsum.photos/720/480";
-                                        evt.target.hidden = true;
+                                        evt.target.src = "https://picsum.photos/250/160";
+                                        // evt.target.hidden = true;
                                     }}
                                     onClick={() => {
                                         play(item.id, index);

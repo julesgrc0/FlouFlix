@@ -186,8 +186,8 @@ class Storage {
       date: new Date().getTime(),
       is_movie: false,
       videos: [],
-      next: -1,
-      last: -1,
+      next: 0,
+      last: 0,
       ...it,
     };
     return await this.set(item.id, item);

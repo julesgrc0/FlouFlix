@@ -73,6 +73,7 @@ public class FlouFlixPlugin  extends Plugin {
         ret.put("file", intent.getStringExtra("file"));
 
         this.notifyListeners(EVENT_SHARE_TEXT_DATA, ret, true);
+
     }
 
 }

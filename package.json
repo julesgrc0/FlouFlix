@@ -17,16 +17,16 @@
     "@capacitor/status-bar": "^4.1.1",
     "@capacitor/toast": "^4.1.0",
     "@capawesome/capacitor-screen-orientation": "^2.0.2",
-    "@chakra-ui/icons": "^2.0.17",
-    "@chakra-ui/react": "^2.5.1",
-    "@emotion/react": "^11.10.6",
-    "@emotion/styled": "^11.10.6",
+    "@chakra-ui/icons": "^2.0.19",
+    "@chakra-ui/react": "^2.7.1",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@hugotomazi/capacitor-navigation-bar": "^2.0.1",
     "capacitor-video-player": "^4.6.2-3",
-    "framer-motion": "^10.3.1",
+    "framer-motion": "^10.12.17",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.9.0"
+    "react-router-dom": "^6.14.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^4.7.0",
