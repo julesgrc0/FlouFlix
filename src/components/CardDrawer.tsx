@@ -97,7 +97,7 @@ const CardDrawer: React.FC<CardDrawerProps> = ({
                     <Image
                         src={item.image}
                         onError={(evt: any) => {
-                            evt.target.src = "https://picsum.photos/720/480";
+                            evt.target.src = "https://picsum.photos/420/280";
                         }}
                         w="100%"
                         h={"280px"}

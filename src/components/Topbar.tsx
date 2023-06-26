@@ -16,6 +16,7 @@ const Topbar: React.FC<TopBarProps> = ({ title, showBorder, icons }) => {
     return (
         <Flex
             padding={5}
+            paddingTop={10}
             columnGap={5}
             justifyContent="space-between"
             borderBottom={"2px solid"}

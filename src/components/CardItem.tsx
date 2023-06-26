@@ -44,10 +44,11 @@ const CardItem: React.FC<CardItemProps> = ({ item, delay, openCard }) => {
                         }}
                         onLoad={(evt: any)=>{
                             setShowImage(true);
+                            
                         }}
                         filter={imageShow ? "blur(0px)" : "blur(100px)"}
                         borderRadius="lg"
-                        transition={"300ms"}
+                        transition={"600ms"}
                         w="100%"
                         h={"280px"}
                         objectFit={"cover"}

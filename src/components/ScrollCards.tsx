@@ -1,16 +1,19 @@
 import React from "react";
-import { Box } from "@chakra-ui/react";
-import { FlouFlix } from '../plugin/index';
-import { useNetwork } from '../hooks/useNetwork';
-import { Item, storage } from '../api/storage';
 import { useNavigate } from "react-router-dom";
+import { Box } from "@chakra-ui/react";
 import { Capacitor } from "@capacitor/core";
 import { StatusBar } from "@capacitor/status-bar";
 import { NavigationBar } from "@hugotomazi/capacitor-navigation-bar";
 
-import CardItem from "./CardItem";
+import { FlouFlix } from '../plugin/index';
 
-type ScrollCardsProps ={
+import { useNetwork } from '../hooks/useNetwork';
+import { Item, storage } from '../api/storage';
+
+
+const CardItem = React.lazy(() => import("./CardItem"));
+
+type ScrollCardsProps = {
   setShowBorder: (show: boolean) => void;
   setCardOpen: (open: boolean) => void;
   setCreateOpen: (open: boolean) => void;
@@ -60,8 +63,7 @@ const ScrollCards: React.FC<ScrollCardsProps> = ({
 
     FlouFlix.addListener("onTextDataShared", (data) => {
       setCreateOpen(false);
-      if (data.text != null)
-      {
+      if (data.text != null) {
         storage.extractVideo(data.text).then(async video => {
           await storage.createItem({
             title: data.text,
@@ -69,13 +71,13 @@ const ScrollCards: React.FC<ScrollCardsProps> = ({
           })
           storage.getItems().then((items) => setItems(items))
         }).catch(() => { })
-      
+
       } else if (data.file != null) {
-      
+
         storage.parseFile(data.file.split("\n")).then(() => {
           storage.getItems().then((items) => setItems(items))
         }).catch(() => { })
-      
+
       }
     })
 
@@ -112,7 +114,7 @@ const ScrollCards: React.FC<ScrollCardsProps> = ({
         }
       }}
     >
-      <React.Fragment>
+      <React.Suspense>
         {items.map((it, index) => (
           <CardItem
             key={index}
@@ -124,11 +126,11 @@ const ScrollCards: React.FC<ScrollCardsProps> = ({
             }}
           />
         ))}
-      </React.Fragment>
+      </React.Suspense>
 
       <Box w="100%" h="40px"></Box>
     </Box>
   );
 }
 
-export default  ScrollCards;
+export default ScrollCards;

@@ -1,24 +1,17 @@
 import React from "react";
-import { Box, ScaleFade } from "@chakra-ui/react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ScaleFade } from "@chakra-ui/react";
 import { AddIcon, SearchIcon } from '@chakra-ui/icons';
-import { ScreenOrientation, OrientationType } from '@capawesome/capacitor-screen-orientation';
-
-
+import { storage } from "../api/storage";
 import '../styles/Home.css';
 
-import Loading from '../components/Loading'
-import Topbar from '../components/Topbar';
 
-// import ScrollCards from '../components/ScrollCards'
-// import CardDrawer from '../components/CardDrawer'
-// import CreateDrawer from '../components/CreateDrawer'
 
+const Topbar = React.lazy(() => import('../components/Topbar'));
 const ScrollCards = React.lazy(() => import('../components/ScrollCards'));
 const CardDrawer = React.lazy(() => import('../components/CardDrawer'));
 const CreateDrawer = React.lazy(() => import('../components/CreateDrawer'));
 
-import { useNavigate, useParams } from "react-router-dom";
-import { storage } from "../api/storage";
 
 export default function Home() {
     const { id } = useParams();
@@ -48,20 +41,20 @@ export default function Home() {
 
     return (
         <ScaleFade initialScale={0.5} in={isFade}>
-            <Topbar showBorder={showBorder} title="FlouFlix" icons={[
-                {
-                    icon: <SearchIcon boxSize={"5"} />,
-                    click: () => { }
-                },
-                {
-                    icon: <AddIcon boxSize={"5"} />,
-                    click: () => {
-                        setCreateOpen(true);
+            <React.Suspense>
+                <Topbar showBorder={showBorder} title="FlouFlix" icons={[
+                    {
+                        icon: <SearchIcon boxSize={"5"} />,
+                        click: () => { }
+                    },
+                    {
+                        icon: <AddIcon boxSize={"5"} />,
+                        click: () => {
+                            setCreateOpen(true);
+                        }
                     }
-                }
-            ]} />
+                ]} />
 
-            <React.Suspense fallback={<Loading />}>
                 <ScrollCards
                     showBorder={showBorder}
                     isCardOpen={isCardOpen}
@@ -72,14 +65,23 @@ export default function Home() {
                     setCreateOpen={setCreateOpen}
                 />
 
-                <CardDrawer isCardOpen={isCardOpen} setCreateOpen={setCreateOpen} setCardOpen={(value) => {
-                    if (!value && id != undefined) {
-                        navigate("/")
-                    }
-                    setCardOpen(value)
-                }}
-                    setSelectedCard={setSelectedCard} selectedCard={selectedCard} />
-                <CreateDrawer isCreateOpen={isCreateOpen} setCreateOpen={setCreateOpen} setSelectedCard={setSelectedCard} selectedCard={selectedCard} />
+                <CardDrawer
+                    isCardOpen={isCardOpen}
+                    setCreateOpen={setCreateOpen}
+                    setCardOpen={(value) => {
+                        if (!value && id != undefined) {
+                            navigate("/")
+                        }
+                        setCardOpen(value)
+                    }}
+                    setSelectedCard={setSelectedCard}
+                    selectedCard={selectedCard} />
+
+                <CreateDrawer
+                    isCreateOpen={isCreateOpen}
+                    setCreateOpen={setCreateOpen}
+                    setSelectedCard={setSelectedCard}
+                    selectedCard={selectedCard} />
             </React.Suspense>
         </ScaleFade>
     )

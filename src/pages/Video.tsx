@@ -2,10 +2,11 @@ import React from "react";
 import {  useNavigate, useParams } from "react-router-dom";
 
 import { App } from "@capacitor/app";
-import { CapacitorVideoPlayer as player } from "capacitor-video-player";
 import { StatusBar } from "@capacitor/status-bar";
 import { NavigationBar } from "@hugotomazi/capacitor-navigation-bar";
 import { ScreenOrientation, OrientationType } from '@capawesome/capacitor-screen-orientation';
+
+import { CapacitorVideoPlayer as player } from "capacitor-video-player";
 import { Item, ItemVideoContent, storage, titleCase } from "../api/storage";
 
 const VideoPlayerPlugin: any = player;

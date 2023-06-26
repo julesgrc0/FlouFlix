@@ -58,6 +58,7 @@ const EditDrawer: React.FC<EditDrawerProps> = ({
         url: undefined,
         index: -1,
     });
+    const [imageShow, setShowImage] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         if (!isCreateOpen) {
@@ -183,7 +184,12 @@ const EditDrawer: React.FC<EditDrawerProps> = ({
                         onError={(evt: any) => {
                             evt.target.src = "https://picsum.photos/720/480";
                         }}
+                        onLoad={(evt: any) => {
+                            setShowImage(true);
+                        }}
+                        filter={imageShow ? "blur(0px)" : "blur(100px)"}
                         borderRadius="lg"
+                        transition={"300ms"}
                         w="100%"
                         h={"280px"}
                         objectFit={"cover"}
