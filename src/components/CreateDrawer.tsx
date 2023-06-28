@@ -3,37 +3,27 @@ import {
     Drawer,
     DrawerOverlay,
     DrawerContent,
-    Image,
     Text,
     Box,
     Checkbox,
     IconButton,
     Flex,
 } from "@chakra-ui/react";
-import Topbar from "./Topbar";
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
+
 import { AddIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { AutofixIcon, DeleteIcon, EditIcon } from "./Icons";
 import { Item, ItemVideo, ItemVideoContent, storage } from "../api/storage";
 
 import CInput from './gui/CInput';
 import CButton from './gui/CButton';
-import { VideoModal, SelectedVideoItem } from './modal/VideoAddModal';
-import { ConfirmClose } from './modal/ConfirmCloseVideos';
 
-type EditDrawerProps = {
-    isCreateOpen: boolean;
-    setCreateOpen: (open: boolean) => void,
-    item?: Item;
-};
+const Topbar = React.lazy(() => import('./Topbar'))
+const VideoModal = React.lazy(() => import('./modal/VideoAddModal'))
+const ConfirmClose = React.lazy(() => import('./modal/ConfirmCloseVideos'))
 
-
-
-type CreateDrawerProps = {
-    isCreateOpen: boolean;
-    selectedCard?: Item;
-    setCreateOpen: (open: boolean) => void;
-    setSelectedCard: (item?: Item) => void;
-}
+import { EditDrawerProps, SelectedVideoItem, CreateDrawerProps } from './types';
 
 
 const EditDrawer: React.FC<EditDrawerProps> = ({
@@ -58,7 +48,6 @@ const EditDrawer: React.FC<EditDrawerProps> = ({
         url: undefined,
         index: -1,
     });
-    const [imageShow, setShowImage] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         if (!isCreateOpen) {
@@ -125,7 +114,7 @@ const EditDrawer: React.FC<EditDrawerProps> = ({
         })();
     }, [onClose, setLoading, title, desc, image, isMovie, videos]);
 
-    return (
+    return <>
         <Drawer isOpen={isCreateOpen} placement="bottom" onClose={onClose}>
             <DrawerOverlay />
             <DrawerContent
@@ -133,16 +122,18 @@ const EditDrawer: React.FC<EditDrawerProps> = ({
                 w="100%"
                 bg={"#141414"}
             >
-                <Topbar
-                    title={item !== undefined ? "Modification" : "Nouvelle vidéo"}
-                    showBorder={false}
-                    icons={[
-                        {
-                            icon: <ChevronDownIcon boxSize={"8"} />,
-                            click: onClose,
-                        },
-                    ]}
-                />
+                <React.Suspense>
+                    <Topbar
+                        title={item !== undefined ? "Modification" : "Nouvelle vidéo"}
+                        showBorder={false}
+                        icons={[
+                            {
+                                icon: <ChevronDownIcon boxSize={"8"} />,
+                                click: onClose,
+                            },
+                        ]}
+                    />
+                </React.Suspense>
 
                 <Box pos={"relative"} overflowY="scroll" p={5}>
                     <Flex columnGap={5} justifyContent="space-between">
@@ -179,21 +170,17 @@ const EditDrawer: React.FC<EditDrawerProps> = ({
                     </Flex>
                     <CInput placeholder="Description" text={desc} setText={setDesc} />
                     <CInput placeholder="Image http://" text={image} setText={setImage} />
-                    <Image
-                        src={image}
-                        onError={(evt: any) => {
-                            evt.target.src = "https://picsum.photos/720/480";
+                    <LazyLoadImage
+                        src={image.length > 0 ? image : "https://picsum.photos/420/280"}
+                        width={"100%"}
+                        style={{
+                            width: "100%",
+                            height: "280px",
+                            borderRadius: "10px",
+                            objectFit: "cover",
+                            objectPosition: "center"
                         }}
-                        onLoad={(evt: any) => {
-                            setShowImage(true);
-                        }}
-                        filter={imageShow ? "blur(0px)" : "blur(100px)"}
-                        borderRadius="lg"
-                        transition={"300ms"}
-                        w="100%"
-                        h={"280px"}
-                        objectFit={"cover"}
-                        objectPosition="center"
+                        effect="blur"
                     />
                     <Checkbox
                         alignSelf={"flex-start"}
@@ -255,6 +242,8 @@ const EditDrawer: React.FC<EditDrawerProps> = ({
                                     _hover={{ background: "transparent" }}
                                     border={"1px solid"}
                                     borderColor="gray.900"
+
+                                    color='gray.400'
                                     onClick={() => {
                                         setVideoItem({
                                             title: vid.title,
@@ -265,6 +254,8 @@ const EditDrawer: React.FC<EditDrawerProps> = ({
                                     }} aria-label={""} />
                                 <IconButton
                                     icon={<DeleteIcon />}
+
+                                    color='gray.400'
                                     bg="transparent"
                                     _hover={{ background: "transparent" }}
                                     border={"1px solid"}
@@ -291,6 +282,8 @@ const EditDrawer: React.FC<EditDrawerProps> = ({
                     )}
                 </Box>
             </DrawerContent>
+        </Drawer>
+        <React.Suspense>
             <VideoModal
                 isOpen={isOpen}
                 isMovie={isMovie}
@@ -340,8 +333,8 @@ const EditDrawer: React.FC<EditDrawerProps> = ({
                     setConfirmOpen(false);
                 }}
             />
-        </Drawer>
-    );
+        </React.Suspense>
+    </>;
 }
 
 

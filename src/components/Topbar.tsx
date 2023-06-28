@@ -1,16 +1,7 @@
 import React from "react";
 import { Flex, Heading, IconButton } from "@chakra-ui/react";
+import { TopBarProps } from './types';
 
-type TopBarIcon = {
-    click: React.MouseEventHandler<HTMLButtonElement>;
-    icon: React.ReactElement<any>;
-};
-
-type TopBarProps = {
-    title: string;
-    showBorder: boolean;
-    icons: TopBarIcon[];
-};
 
 const Topbar: React.FC<TopBarProps> = ({ title, showBorder, icons }) => {
     return (

@@ -7,14 +7,9 @@ import {
     Flex,
 } from "@chakra-ui/react";
 import CButton from '../gui/CButton';
+import { ConfirmCloseProps } from '../types';
 
-export type ConfirmCloseProps = {
-    isOpen: boolean;
-    onClose: () => void;
-    onConfirm: () => void;
-}
-
-export const ConfirmClose: React.FC<ConfirmCloseProps> = ({ isOpen, onClose, onConfirm }) => {
+const ConfirmClose: React.FC<ConfirmCloseProps> = ({ isOpen, onClose, onConfirm }) => {
     return (
         <Modal
             isOpen={isOpen}
@@ -33,3 +28,5 @@ export const ConfirmClose: React.FC<ConfirmCloseProps> = ({ isOpen, onClose, onC
         </Modal>
     );
 }
+
+export default ConfirmClose;

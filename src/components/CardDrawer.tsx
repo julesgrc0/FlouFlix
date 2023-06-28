@@ -17,20 +17,17 @@ import {
 } from "@chakra-ui/react";
 
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { PlayIcon, EditIcon, DeleteIcon } from "./Icons";
-import Topbar from "./Topbar";
-import { Item, storage } from "../api/storage";
 import { useNavigate } from "react-router-dom";
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
+import { Item, storage } from "../api/storage";
 import { DeleteModal } from "./modal/DeleteModal";
+import { PlayIcon, EditIcon, DeleteIcon } from "./Icons";
+import { CardDrawerProps } from './types';
 
-type CardDrawerProps = {
-    setSelectedCard: (item?: Item) => void;
-    selectedCard?: Item;
-    isCardOpen: boolean;
-    setCardOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    setCreateOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
+
+const Topbar = React.lazy(() => import('./Topbar'));
 
 const CardDrawer: React.FC<CardDrawerProps> = ({
     setSelectedCard,
@@ -80,32 +77,34 @@ const CardDrawer: React.FC<CardDrawerProps> = ({
         >
             <DrawerOverlay />
             <DrawerContent h="100%" w="100%" bg={"#141414"}>
-                <Topbar
-                    showBorder={false}
-                    title={"Visionner"}
-                    icons={[
-                        {
-                            icon: <ChevronDownIcon boxSize={"8"} />,
-                            click: () => {
-                                setSelectedCard(undefined);
-                                setCardOpen(false);
+                <React.Suspense>
+                    <Topbar
+                        showBorder={false}
+                        title={"Visionner"}
+                        icons={[
+                            {
+                                icon: <ChevronDownIcon boxSize={"8"} />,
+                                click: () => {
+                                    setSelectedCard(undefined);
+                                    setCardOpen(false);
+                                },
                             },
-                        },
-                    ]}
-                />
+                        ]}
+                    />
+                </React.Suspense>
                 <Box pos={"relative"} overflowY="scroll">
-                    <Image
-                        src={item.image}
-                        onError={(evt: any) => {
-                            evt.target.src = "https://picsum.photos/420/280";
+                    <LazyLoadImage
+                        src={item.image.length > 0 ? item.image : "https://picsum.photos/420/280"}
+                        width={"100%"}
+                        style={{
+                            width: "100%",
+                            height: "280px",
+                            objectFit: "cover",
+                            objectPosition: "center",
+                            borderBottom: "2px solid white",
+                            borderTop: "2px solid white"
                         }}
-                        w="100%"
-                        h={"280px"}
-                        objectFit={"cover"}
-                        objectPosition="center"
-                        borderBottom="2px solid"
-                        borderTop="2px solid"
-                        borderColor={"white"}
+                        effect="blur"
                     />
                     <Flex justifyContent={"space-between"} columnGap={2} padding={2}>
                         <Button
@@ -178,16 +177,18 @@ const CardDrawer: React.FC<CardDrawerProps> = ({
                     {!item.is_movie &&
                         item.videos.map((vid, index) => (
                             <Box key={index}>
-                                <Image
-                                    w="100%"
-                                    maxH={"250px"}
-                                    objectFit={"cover"}
-                                    objectPosition="center"
-                                    src={vid.video.image}
-                                    onError={(evt: any) => {
-                                        evt.target.src = "https://picsum.photos/250/160";
-                                        // evt.target.hidden = true;
+                                <LazyLoadImage
+                                    src={vid.video.image.length > 0 ? vid.video.image : "https://picsum.photos/375/280"}
+                                    width={"100%"}
+                                    style={{
+                                        width: "100%",
+                                        height: "250px",
+                                        objectFit: "cover",
+                                        objectPosition: "center",
+                                        borderBottom: "2px solid white",
+                                        borderTop: "2px solid white"
                                     }}
+                                    effect="blur"
                                     onClick={() => {
                                         play(item.id, index);
                                     }}
@@ -212,6 +213,7 @@ const CardDrawer: React.FC<CardDrawerProps> = ({
                                     <Text>{Math.round(vid.video.progress * 100)}%</Text>
                                     {!item.is_movie && (
                                         <Button
+                                            color='gray.400'
                                             bg="transparent"
                                             border="1px solid"
                                             borderColor={"gray.600"}

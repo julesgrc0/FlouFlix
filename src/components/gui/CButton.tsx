@@ -2,13 +2,8 @@ import React from "react";
 import {
     Button,
 } from "@chakra-ui/react";
+import { CButtonProps } from '../types';
 
-type CButtonProps = {
-    text: string;
-    loading: boolean;
-    fill: boolean;
-    onClick: React.MouseEventHandler<HTMLButtonElement>;
-};
 
 const CButton: React.FC<CButtonProps> = ({ text, loading, onClick, fill }) => {
     return (

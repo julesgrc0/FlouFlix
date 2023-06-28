@@ -10,22 +10,11 @@ import { ItemVideoContent, storage } from "../../api/storage";
 import CInput from '../gui/CInput';
 import CButton from '../gui/CButton';
 
-export type SelectedVideoItem = {
-    title?: string;
-    url?: string;
-    index: number;
-}
+import { VideoModalProps } from '../types';
 
-export type VideoModalProps = {
-    isMovie: boolean;
-    isOpen: boolean;
-    onClose: () => void;
-    addVideo: (title: string, videoContent: ItemVideoContent) => void;
+export 
 
-    itemVideo?: SelectedVideoItem;
-}
-
-export const VideoModal: React.FC<VideoModalProps> = ({ isMovie, isOpen, onClose, addVideo, itemVideo }) => {
+ const VideoModal: React.FC<VideoModalProps> = ({ isMovie, isOpen, onClose, addVideo, itemVideo }) => {
     const [title, setTitle] = React.useState("");
     const [url, setUrl] = React.useState("");
     const [loading, setLoading] = React.useState(false);
@@ -96,3 +85,5 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isMovie, isOpen, onClose
         </Modal>
     );
 }
+
+export default VideoModal;

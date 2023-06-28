@@ -51,7 +51,8 @@ class Storage {
     return !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
   }
 
-  public async parseFile(lines: string[]) {
+  public async parseFile(fileData: string) {
+    let lines: string[] = fileData.split("\n");
     let items: ItemVideo[] = [];
     let title: string = "";
 

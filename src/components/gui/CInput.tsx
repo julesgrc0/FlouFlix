@@ -3,11 +3,7 @@ import {
     Input,
 } from "@chakra-ui/react";
 
-type CInputProps = {
-    placeholder: string;
-    text: string;
-    setText: (text: string) => void
-}
+import { CInputProps } from '../types';
 
 const CInput: React.FC<CInputProps> = ({ placeholder, text, setText }) => {
     return (

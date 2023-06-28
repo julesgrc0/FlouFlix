@@ -24,8 +24,10 @@
     "@hugotomazi/capacitor-navigation-bar": "^2.0.1",
     "capacitor-video-player": "^4.6.2-3",
     "framer-motion": "^10.12.17",
+    "million": "^2.4.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-lazy-load-image-component": "^1.6.0",
     "react-router-dom": "^6.14.0"
   },
   "devDependencies": {
